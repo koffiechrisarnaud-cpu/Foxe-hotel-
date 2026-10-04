@@ -64,6 +64,12 @@ input[disabled]{opacity:.6}
 .sheet{position:relative;width:100%;max-width:520px;margin:0;border-radius:26px 26px 0 0;max-height:90%;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 .x{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 #toast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:99px;font-size:14px;z-index:40;max-width:90%}
+.starsel{display:flex;gap:4px;justify-content:center;margin:12px 0 4px}
+.starsel button{font-size:38px;line-height:1;border:0;background:none;color:var(--line);cursor:pointer;padding:0 2px}
+.starsel button.on{color:var(--gold)}
+textarea{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:16px "DM Sans",system-ui,sans-serif;min-height:100px;resize:vertical}
+.rvd{font-size:13px;color:var(--muted);margin-top:4px}
+.cancel.rv{border-color:var(--olive);color:var(--olive)}
 </style>
 </head>
 <body>
@@ -111,6 +117,17 @@ input[disabled]{opacity:.6}
     <div id="ok"></div>
   </section></div>
 </div>
+<div class="ov" id="rvov"><section class="card sheet">
+  <button class="x" id="rvx" type="button" aria-label="Fermer">✕</button>
+  <h2 id="rvt">Votre avis</h2>
+  <p class="rvd" id="rvs2"></p>
+  <div class="starsel" id="rvst"></div>
+  <div class="err" id="rve" style="text-align:center"></div>
+  <label for="rvc">Votre commentaire (facultatif)</label>
+  <textarea id="rvc" maxlength="600" placeholder="Racontez votre séjour…"></textarea>
+  <button class="save" id="rvg" type="button">Envoyer mon avis</button>
+  <p class="rvd" style="text-align:center">Votre avis sera affiché sur le site après validation par l'hôtel.</p>
+</section></div>
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -120,7 +137,7 @@ var C=window.FOXE||{};
 var $=function(i){return document.getElementById(i)};
 var fmt=function(n){return Number(n).toLocaleString("fr-FR")+" FCFA"};
 var db=window.supabase&&C.SUPABASE_URL?window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_KEY):null;
-var user=null,prof={},B=[],PAY={},SET={free_cancel_hours:"48"},tab="up";
+var user=null,prof={},B=[],PAY={},REVS={},SET={free_cancel_hours:"48"},tab="up",rvBooking=0,rvNote=0;
 var LABEL={confirmed:"Confirmée",pending:"En attente",cancelled:"Annulée"};
 var COLORS=[["#8c9a5b","#4b4a24"],["#c9a46b","#7a5a2e"],["#5d6f78","#2f3d3a"],["#a9b8a8","#4f6658"]];
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
@@ -147,6 +164,11 @@ function render(){
     var paid=PAY[b.id]||0,pay="";
     if(b.status!="cancelled")pay=paid>0?"Acompte payé : "+fmt(paid):"Acompte à régler (paiement en ligne bientôt disponible)";
     var act="";
+    if(kind(b)=="past"&&b.status=="confirmed"){
+      var rv=REVS[b.id];
+      act=rv?'<span class="pay">Votre avis : '+"★★★★★".slice(0,rv.rating)+"☆☆☆☆☆".slice(0,5-rv.rating)+'<br>'+(rv.is_published?"affiché sur le site":"en attente de validation")+'</span>'
+        :'<button class="cancel rv" data-rv="'+b.id+'" type="button">Donner mon avis</button>';
+    }
     if(kind(b)=="up"){
       act=canFree(b)?'<button class="cancel" data-id="'+b.id+'" type="button">Annuler</button>'
         :'<span class="pay">Annulation gratuite dépassée, contactez l\'hôtel</span>';
@@ -158,7 +180,8 @@ function render(){
       '<div class="ask" id="ask'+b.id+'">Annuler cette réservation ? Cette action est définitive.<br>'+
       '<button class="y" data-yes="'+b.id+'" type="button">Oui, annuler</button><button data-no="'+b.id+'" type="button">Non, garder</button></div></div></article>';
   }).join("");
-  document.querySelectorAll(".cancel").forEach(function(x){x.onclick=function(){$("ask"+x.dataset.id).classList.add("on")}});
+  document.querySelectorAll("[data-rv]").forEach(function(x){x.onclick=function(){openReview(+x.dataset.rv)}});
+  document.querySelectorAll(".cancel[data-id]").forEach(function(x){x.onclick=function(){$("ask"+x.dataset.id).classList.add("on")}});
   document.querySelectorAll("[data-no]").forEach(function(x){x.onclick=function(){$("ask"+x.dataset.no).classList.remove("on")}});
   document.querySelectorAll("[data-yes]").forEach(function(x){x.onclick=function(){cancel(+x.dataset.yes,x)}});
 }
@@ -177,6 +200,8 @@ async function loadBookings(){
   if(r.error){$("list").innerHTML='<div class="empty">Impossible de charger vos réservations. Réessayez dans un instant.</div>';return}
   B=r.data||[];
   var p=await db.from("payments").select("booking_id,amount,status").eq("status","paid");
+  var rv=await db.from("reviews").select("booking_id,rating,is_published").eq("user_id",user.id);
+  REVS={};if(!rv.error&&rv.data)rv.data.forEach(function(x){if(x.booking_id)REVS[x.booking_id]=x});
   PAY={};if(!p.error&&p.data)p.data.forEach(function(x){PAY[x.booking_id]=(PAY[x.booking_id]||0)+Number(x.amount)});
   render();
 }
@@ -206,11 +231,41 @@ document.querySelectorAll(".tabs button").forEach(function(b){
   };
 });
 
+function openReview(id){
+  var b=B.filter(function(x){return x.id==id})[0];if(!b)return;
+  rvBooking=id;rvNote=0;
+  $("rvt").textContent="Votre avis";
+  $("rvs2").textContent=(b.rooms?b.rooms.name:"Chambre")+" · séjour du "+dstr(b.check_in)+" au "+dstr(b.check_out);
+  $("rvc").value="";$("rve").textContent="";
+  $("rvst").innerHTML=[1,2,3,4,5].map(function(i){return '<button type="button" data-s="'+i+'" aria-label="'+i+' étoile'+(i>1?"s":"")+'">★</button>'}).join("");
+  $("rvst").querySelectorAll("button").forEach(function(x){x.onclick=function(){
+    rvNote=+x.dataset.s;
+    $("rvst").querySelectorAll("button").forEach(function(o){o.classList.toggle("on",+o.dataset.s<=rvNote)});
+    $("rve").textContent="";
+  }});
+  $("rvov").classList.add("on");
+}
+$("rvx").onclick=function(){$("rvov").classList.remove("on")};
+$("rvov").onclick=function(e){if(e.target==$("rvov"))$("rvov").classList.remove("on")};
+$("rvg").onclick=async function(){
+  if(!(rvNote>=1&&rvNote<=5)){$("rve").textContent="Choisissez une note de 1 à 5 étoiles.";return}
+  $("rvg").disabled=true;
+  var r=await db.from("reviews").insert({booking_id:rvBooking,rating:rvNote,comment:$("rvc").value.trim()||null});
+  $("rvg").disabled=false;
+  if(r.error){
+    var m=r.error.message||"";
+    $("rve").textContent=(r.error.code==="23505"||/duplicate|unique/i.test(m))?"Vous avez déjà donné votre avis sur ce séjour.":/Avis impossible/i.test(m)?"Vous ne pouvez noter que les séjours confirmés et terminés.":"Votre avis n'a pas pu être envoyé. Réessayez.";
+    return;
+  }
+  $("rvov").classList.remove("on");
+  toast("Merci ! Votre avis sera affiché après validation par l'hôtel.");
+  await loadBookings();
+};
 function menu(o){$("menu").classList.toggle("on",o);$("bg").setAttribute("aria-expanded",o?"true":"false")}
 function sheet(o){$("ov").classList.toggle("on",o);if(!o)$("ok").textContent=""}
 $("bg").onclick=function(e){e.stopPropagation();menu(!$("menu").classList.contains("on"))};
 document.addEventListener("click",function(e){if(!$("menu").contains(e.target))menu(false)});
-document.addEventListener("keydown",function(e){if(e.key=="Escape"){menu(false);sheet(false)}});
+document.addEventListener("keydown",function(e){if(e.key=="Escape"){menu(false);sheet(false);$("rvov").classList.remove("on")}});
 $("mh").onclick=function(){location.href="index.html"};
 $("mi").onclick=function(){menu(false);if(!user){location.href="connexion.html";return}sheet(true)};
 $("mr").onclick=function(){menu(false);window.scrollTo({top:0,behavior:"smooth"})};
