@@ -2,77 +2,410 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="google" content="notranslate">
-<title>Foxe Hôtel – Test de connexion</title>
+<title>Foxe Hôtel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap">
 <style>
-  body{margin:0;font-family:system-ui,sans-serif;background:#f5f1ea;color:#2a2118;line-height:1.5}
-  .w{max-width:560px;margin:0 auto;padding:20px 16px 40px}
-  h1{font-family:Georgia,serif;font-weight:500;font-size:32px;margin:6px 0 4px}
-  .sub{color:#6f655a;font-size:14px;margin-bottom:16px}
-  .c{background:#fffdf9;border:1px solid #e2dccf;border-radius:18px;padding:14px 16px;margin-top:12px}
-  .c b{display:block}
-  .ok{color:#3f6b3a}.ko{color:#b3412f}.w8{color:#9a6a1c}
-  ul{margin:8px 0 0;padding-left:18px;font-size:14px}
+:root{
+  --bg:#f5f1ea; --card:#fffdf9; --ink:#2a2118; --muted:#6f655a;
+  --olive:#4b4a24; --sage:#e1e4cf; --dark:#1f1710; --gold:#c08a3e; --line:#e2dccf;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#17120d;--card:#221b14;--ink:#f1eadf;--muted:#b3a899;--olive:#8a8847;--sage:#2a2c1d;--dark:#0f0b08;--line:#352c22}
+}
+:root[data-theme="dark"]{--bg:#17120d;--card:#221b14;--ink:#f1eadf;--muted:#b3a899;--olive:#8a8847;--sage:#2a2c1d;--dark:#0f0b08;--line:#352c22}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;line-height:1.55;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-height:1.1}
+.wrap{max-width:960px;margin:0 auto;padding:0 18px}
+.hero{margin:12px;border-radius:28px;color:#fff;padding:22px 22px 34px;min-height:520px;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,rgba(20,14,8,.15),rgba(20,14,8,.75)),radial-gradient(circle at 70% 25%,#7a8a4a 0,#3d4a26 40%,#1f1710 100%)}
+nav{display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:"Cormorant Garamond",Georgia,serif;font-size:26px;font-weight:600;letter-spacing:.5px}
+.pill{background:#fff;color:var(--dark);border:0;border-radius:99px;padding:9px 16px;font:500 13px "DM Sans",system-ui,sans-serif;cursor:pointer;text-decoration:none}
+.hero-body{margin-top:auto}
+.hero h1{font-size:clamp(46px,13vw,80px)}
+.hero p{margin:14px 0 22px;max-width:34ch;opacity:.9}
+.btn{display:inline-block;background:var(--olive);color:#fff;border:0;border-radius:99px;padding:13px 22px;font:500 15px "DM Sans",system-ui,sans-serif;cursor:pointer;text-decoration:none}
+.search{background:var(--card);border:1px solid var(--line);border-radius:22px;margin:-26px 12px 0;position:relative;padding:16px;display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.search label{font-size:12px;color:var(--muted);display:block;margin-bottom:3px}
+.search input,.search select{width:100%;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:15px "DM Sans",system-ui,sans-serif}
+.search .full{grid-column:1/-1}
+.stats{display:flex;justify-content:space-around;text-align:center;padding:30px 0 8px}
+.stats b{display:block;font:600 30px "Cormorant Garamond",Georgia,serif}
+.stats span{font-size:12px;color:var(--muted)}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-top:34px}
+h2{font-size:clamp(32px,8vw,44px);margin:6px 0 18px}
+.rooms{display:grid;gap:16px}
+@media(min-width:700px){.rooms{grid-template-columns:repeat(3,1fr)}.search{grid-template-columns:repeat(4,1fr);margin:-30px auto 0;max-width:900px}.search .full{grid-column:auto;align-self:end}}
+.room{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.ph{height:170px;background:linear-gradient(135deg,#8c9a5b,#4b4a24 55%,#2a2118)}
+.room:nth-child(2) .ph{background:linear-gradient(135deg,#c9a46b,#7a5a2e 55%,#2a2118)}
+.room:nth-child(3) .ph{background:linear-gradient(135deg,#5d6f78,#2f3d3a 55%,#1a1411)}
+.room .in{padding:16px}
+.room p{color:var(--muted);font-size:14px;margin:6px 0 12px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.price{font-weight:600}.price small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.room .btn{padding:10px 16px;font-size:14px}
+.room.off{display:none}
+#msg{margin:12px 0 0;color:var(--muted);font-size:14px}
+.band{background:var(--dark);color:#f1eadf;border-radius:28px;margin:40px 12px 0;padding:34px 22px}
+.band p{opacity:.8;margin:10px 0 20px;max-width:40ch}
+details{border-bottom:1px solid var(--line);padding:14px 0}
+summary{cursor:pointer;font-weight:500;list-style:none;display:flex;justify-content:space-between}
+summary::after{content:"+";font-size:20px;color:var(--gold)}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:8px;font-size:14px}
+.nr{display:flex;align-items:center;gap:8px}
+.mw{position:relative}
+.burger{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer}
+.menu{display:none;position:absolute;right:0;top:46px;min-width:230px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:6px;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.menu.on{display:block}
+.menu button,.menu a{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:13px 14px;border-radius:12px;font:500 15px "DM Sans",system-ui,sans-serif;cursor:pointer;text-decoration:none}
+.menu button:active,.menu a:active{background:var(--bg)}
+.menu .sep{border-top:1px solid var(--line);border-radius:0 0 12px 12px;margin-top:4px;color:var(--olive)}
+.svc{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:700px){.svc{grid-template-columns:repeat(4,1fr)}}
+.sv{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px 14px;transition:transform .2s}
+.sv:active{transform:scale(.97)}
+.sv i{font-style:normal;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--olive),var(--gold));color:#fff;margin-bottom:12px;box-shadow:0 6px 14px rgba(75,74,36,.25)}
+.sv b{display:block;font-size:15px}
+.sv span{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;line-height:1.4}
+.hcard{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:4px 16px}
+.hcard div{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid var(--line);font-size:14px}
+.hcard div:first-child{border-top:0}
+.hcard span:last-child{color:var(--muted);text-align:right}
+.gal{background:var(--sage);border-radius:28px;padding:24px 16px 20px;margin-top:40px}
+.gal h2{margin-bottom:14px}
+.gchips{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none}
+.gch{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:8px 14px;font:500 13px "DM Sans",system-ui,sans-serif;white-space:nowrap;cursor:pointer}
+.gch.on{background:var(--olive);color:#fff;border-color:var(--olive)}
+.gg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:700px){.gg{grid-template-columns:repeat(4,1fr)}}
+.gt{height:150px;border:0;border-radius:18px;display:flex;align-items:flex-end;padding:10px;color:#fff;font:500 12px "DM Sans",system-ui,sans-serif;text-align:left;cursor:pointer}
+.gt.tall{grid-row:span 2;height:auto;min-height:310px}
+.bov{display:none;position:fixed;inset:0;background:rgba(15,10,6,.55);z-index:45;align-items:flex-end;justify-content:center}
+.bov.on{display:flex}
+.bsh{position:relative;width:100%;max-width:520px;background:var(--card);border-radius:26px 26px 0 0;max-height:92%;overflow-y:auto;padding:22px 18px calc(20px + env(safe-area-inset-bottom,0px))}
+.bsh h3{font-size:32px;margin:2px 0 2px}
+.bsub{color:var(--muted);font-size:13px;margin-bottom:6px}
+.bsh label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px}
+.bsh input,.bsh select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:16px "DM Sans",system-ui,sans-serif}
+.b2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bsum{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px;font-size:14px}
+.bsum div{display:flex;justify-content:space-between;padding:3px 0}
+.bsum .t{font-weight:600;font-size:17px}
+.bmsg{margin:10px 0 4px;font-size:13px;min-height:18px;color:#b3412f}
+.bmsg.ok{color:#3f6b3a}
+.bx{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+#bgo:disabled{opacity:.5}
+.lb{display:none;position:fixed;inset:0;background:rgba(15,10,6,.92);z-index:50;flex-direction:column;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.lb.on{display:flex}
+.lv{width:100%;max-width:640px;height:min(62vh,520px);border-radius:24px}
+.lc{display:flex;align-items:center;gap:16px;margin-top:16px;color:#f1eadf;font-size:14px}
+.lc button,.lx{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;font-size:22px;cursor:pointer}
+.lx{position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top,0px))}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30px}
 </style>
 </head>
 <body>
-<div class="w">
-  <h1>Foxe Hôtel</h1>
-  <p class="sub">Test de connexion à la base de données. Cette page vérifie que le site parle bien à Supabase et que la sécurité fonctionne.</p>
-  <div id="out"></div>
+<header class="hero">
+  <nav>
+    <div class="logo">Foxe Hôtel</div>
+    <div class="nr">
+      <div class="mw">
+        <button class="burger" id="bg" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div class="menu" id="menu">
+          <button type="button" data-go="top">Accueil</button>
+          <button type="button" data-go="chambres">Nos chambres</button>
+          <button type="button" data-go="services">Nos services</button>
+          <button type="button" data-go="galerie">Galerie photo</button>
+          <button type="button" data-go="faq">Questions fréquentes</button>
+          <a href="connexion.html" class="sep" id="mAuth">Connexion / Inscription</a>
+          <button type="button" id="mOut" style="display:none">Se déconnecter</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="hero-body">
+    <h1>Nature.<br>Confort.<br>Vous.</h1>
+    <p>Un séjour au calme, pensé pour se reposer et se ressourcer.</p>
+    <a class="btn" href="#chambres">Voir les chambres →</a>
+  </div>
+</header>
+
+
+<main class="wrap">
+  <div class="stats">
+    <div><b id="stN">–</b><span>types de chambres</span></div>
+    <div><b>24h/24</b><span>réception</span></div>
+    <div><b id="stC">48 h</b><span>annulation gratuite</span></div>
+  </div>
+
+  <div class="eyebrow" id="chambres">Nos chambres</div>
+  <h2>Choisissez votre refuge</h2>
+  <div class="rooms" id="rooms"></div>
+  <p id="msg"></p>
+
+  <div class="eyebrow" id="services">Nos services</div>
+  <h2>Tout pour votre confort</h2>
+  <div class="svc">
+    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><path d="M2 9a14 14 0 0 1 20 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></i><b>Wi-Fi gratuit</b><span>Connexion rapide partout dans l'hôtel</span></div>
+    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3v2M12 3v2"/></svg></i><b>Petit-déjeuner</b><span>Servi chaque matin de 7h à 10h</span></div>
+    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M4.2 7l15.6 10M4.2 17L19.8 7"/><path d="M9.5 3.5L12 6l2.5-2.5M9.5 20.5L12 18l2.5 2.5"/></svg></i><b>Climatisation</b><span>Dans toutes les chambres</span></div>
+    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="4"/><path d="M10 17V8h3.2a2.6 2.6 0 0 1 0 5.2H10"/></svg></i><b>Parking sécurisé</b><span>Gratuit pour nos clients</span></div>
+    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18"/><path d="M5 17a7 7 0 0 1 14 0"/><path d="M12 6V4M10.5 4h3"/><path d="M3 20h18"/></svg></i><b>Room service</b><span>Vos repas servis en chambre</span></div>
+    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="13" rx="3"/><path d="M4 11h16"/><circle cx="8" cy="19.5" r="1.5"/><circle cx="16" cy="19.5" r="1.5"/></svg></i><b>Navette aéroport</b><span>Sur réservation</span></div>
+    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><circle cx="12" cy="13" r="4"/><path d="M8 6.5h.01M11 6.5h.01"/></svg></i><b>Blanchisserie</b><span>Linge lavé et repassé</span></div>
+    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i><b>Réception 24h/24</b><span>Une équipe à votre écoute</span></div>
+  </div>
+
+  <div class="eyebrow" id="horaires">Horaires</div>
+  <h2>Bien préparer votre séjour</h2>
+  <div class="hcard">
+    <div><span>Réception</span><span>24h/24</span></div>
+    <div><span>Arrivée (check-in)</span><span>à partir de 14h</span></div>
+    <div><span>Départ (check-out)</span><span>avant 12h</span></div>
+    <div><span>Petit-déjeuner</span><span>7h – 10h</span></div>
+    <div><span>Réponses WhatsApp</span><span>8h – 20h</span></div>
+  </div>
+
+  <section class="band">
+    <h2 style="margin:0">Réservez votre séjour idéal</h2>
+    <p>Créez votre compte pour réserver en quelques minutes et retrouver toutes vos réservations.</p>
+    <a class="btn" style="background:var(--gold)" href="#chambres">Réserver maintenant</a>
+  </section>
+
+  <section class="gal" id="galerie">
+    <div class="eyebrow" style="margin-top:0">Galerie photo</div>
+    <h2>Un aperçu de Foxe Hôtel</h2>
+    <div class="gchips" id="gchips"></div>
+    <div class="gg" id="gg"></div>
+  </section>
+
+  <div class="eyebrow" id="faq">Questions fréquentes</div>
+  <h2>On vous répond</h2>
+  <details><summary>Quelle est l'heure d'arrivée ?</summary><p>Arrivée à partir de 14h, départ avant 12h.</p></details>
+  <details><summary>Puis-je annuler ma réservation ?</summary><p>Oui, depuis votre espace client, dans le délai d'annulation gratuite indiqué plus haut.</p></details>
+  <details><summary>Quels moyens de paiement ?</summary><p>Un acompte est demandé à la réservation, le reste se règle à l'hôtel.</p></details>
+</main>
+
+<div class="bov" id="bov"><div class="bsh">
+  <button class="bx" id="bx" type="button" aria-label="Fermer">✕</button>
+  <div class="eyebrow" style="margin-top:0">Votre réservation</div>
+  <h3 id="bn"></h3>
+  <p class="bsub" id="bs"></p>
+  <div class="b2">
+    <div><label for="ba">Arrivée</label><input type="date" id="ba"></div>
+    <div><label for="bd">Départ</label><input type="date" id="bd"></div>
+  </div>
+  <label for="bgu">Personnes</label><select id="bgu"></select>
+  <div class="bsum" id="bsum"></div>
+  <div class="bmsg" id="bmsg"></div>
+  <button class="btn" id="bgo" type="button" style="width:100%">Confirmer la réservation</button>
+  <a class="btn" id="blog" href="connexion.html" style="display:none;text-align:center;text-decoration:none;margin-top:0">Se connecter pour réserver</a>
+  <a class="btn" id="bpay" href="connexion.html" style="display:none;text-align:center;text-decoration:none;margin-top:0">Voir mon espace →</a>
+</div></div>
+
+<div class="lb" id="lb">
+  <button class="lx" id="lx" type="button" aria-label="Fermer">✕</button>
+  <div class="lv" id="lv"></div>
+  <div class="lc"><button type="button" id="lp" aria-label="Photo précédente">‹</button><span id="lt"></span><button type="button" id="ln" aria-label="Photo suivante">›</button></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-var SUPABASE_URL = "https://kaqyrpyqdxuvraltngez.supabase.co";
-var SUPABASE_KEY = "sb_publishable__du_lUdxOZ-Yc6qS8daY-Q_Gr4AuNFA";
+<footer>© Foxe Hôtel</footer>
 
-var out = document.getElementById("out");
-function line(cls, title, detail){
-  var d = document.createElement("div");
-  d.className = "c";
-  d.innerHTML = '<b class="'+cls+'">'+title+'</b>'+(detail||"");
-  out.appendChild(d);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+var C=window.FOXE||{};
+var E=function(i){return document.getElementById(i)};
+var fmt=function(n){return Number(n).toLocaleString("fr-FR")+" FCFA"};
+var DMS=864e5;
+var GR=[["#8c9a5b","#4b4a24"],["#c9a46b","#7a5a2e"],["#5d6f78","#2f3d3a"],["#a9b8a8","#4f6658"]];
+var ROOMS=[],SET={deposit_percent:"30",free_cancel_hours:"48"},busy=[],bcur=null,user=null;
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+
+if(!window.supabase||!C.SUPABASE_URL){
+  E("msg").textContent="Le site ne peut pas se connecter à la base de données pour le moment.";
+}
+var db=window.supabase?window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_KEY):null;
+
+function iso(o){
+  var d=new Date(Date.now()+o*DMS);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 
-(async function(){
-  if(!window.supabase){ line("ko","La bibliothèque Supabase n'a pas pu se charger","<div>Vérifiez la connexion internet et rechargez la page.</div>"); return; }
-  var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+async function load(){
+  if(!db)return;
+  var r=await db.from("rooms").select("id,name,description,price_per_night,capacity,image_url").eq("is_active",true).order("id");
+  if(r.error){E("msg").textContent="Impossible de charger les chambres pour le moment. Réessayez dans un instant.";return}
+  ROOMS=r.data||[];
+  var s=await db.from("hotel_settings").select("key,value");
+  if(!s.error&&s.data)s.data.forEach(function(x){SET[x.key]=x.value});
+  render();
+}
+function render(){
+  E("stN").textContent=ROOMS.length;
+  E("stC").textContent=(parseInt(SET.free_cancel_hours,10)||0)+" h";
+  if(!ROOMS.length){E("rooms").innerHTML="";E("msg").textContent="Aucune chambre disponible pour le moment.";return}
+  E("msg").textContent="";
+  E("rooms").innerHTML=ROOMS.map(function(r,i){
+    var g=GR[i%GR.length];
+    var ph=r.image_url
+      ?'<div class="ph" style="background:url(\''+encodeURI(r.image_url)+'\') center/cover"></div>'
+      :'<div class="ph" style="background:linear-gradient(135deg,'+g[0]+','+g[1]+' 55%,#2a2118)"></div>';
+    return '<article class="room">'+ph+'<div class="in"><h3>'+esc(r.name)+'</h3><p>'+esc(r.description)+' · '+r.capacity+' pers. max</p>'+
+      '<div class="row"><div class="price">'+fmt(r.price_per_night)+'<small>par nuit</small></div>'+
+      '<button class="btn" data-rid="'+r.id+'" type="button">Réserver</button></div></div></article>';
+  }).join("");
+  document.querySelectorAll("[data-rid]").forEach(function(b){b.onclick=function(){openBook(+b.dataset.rid)}});
+}
 
-  // 1. Chambres : lisibles par tout le monde
-  var r = await db.from("rooms").select("name, price_per_night, capacity").order("id");
+/* ---------- Réservation ---------- */
+function clash(a,d){return busy.some(function(x){return a<x.check_out&&d>x.check_in})}
+function resetBook(){
+  E("bgo").style.display="";E("bgo").disabled=true;E("blog").style.display="none";E("bpay").style.display="none";
+  E("bmsg").textContent="";E("bmsg").className="bmsg";E("bsum").innerHTML="";
+}
+async function openBook(id){
+  bcur=ROOMS.filter(function(r){return r.id==id})[0];
+  if(!bcur)return;
+  E("bn").textContent=bcur.name;
+  E("bs").textContent=fmt(bcur.price_per_night)+" par nuit · "+bcur.capacity+" personne"+(bcur.capacity>1?"s":"")+" maximum";
+  var o="";for(var i=1;i<=bcur.capacity;i++)o+='<option value="'+i+'">'+i+" personne"+(i>1?"s":"")+"</option>";
+  E("bgu").innerHTML=o;
+  E("ba").value="";E("bd").value="";E("ba").min=iso(0);E("bd").min=iso(1);
+  busy=[];bcalc();
+  E("bov").classList.add("on");
+  var r=await db.rpc("room_busy_dates",{p_room:bcur.id});
+  busy=(r.error||!r.data)?[]:r.data;
+  bcalc();
+}
+function bcalc(){
+  var a=E("ba").value,d=E("bd").value,m=E("bmsg"),go=E("bgo");
+  if(go.dataset.done==="1")return;
+  resetBook();
+  if(!a||!d){m.textContent="Choisissez vos dates d'arrivée et de départ.";return}
+  var n=Math.round((new Date(d)-new Date(a))/DMS);
+  if(!(n>0)){m.textContent="Le départ doit être après l'arrivée.";return}
+  if(clash(a,d)){m.textContent="Cette chambre est déjà réservée sur ces dates. Essayez d'autres dates.";return}
+  var tot=bcur.price_per_night*n,pct=Math.min(100,Math.max(0,parseInt(SET.deposit_percent,10)||0));
+  var dep=Math.round(tot*pct/100/500)*500;
+  E("bsum").innerHTML="<div><span>"+fmt(bcur.price_per_night)+" × "+n+" nuit"+(n>1?"s":"")+"</span><span>"+fmt(tot)+"</span></div>"+
+    "<div class='t'><span>Total du séjour</span><span>"+fmt(tot)+"</span></div>"+
+    (pct>0?"<div><span>Acompte demandé ("+pct+" %)</span><span>"+fmt(dep)+"</span></div><div><span>Reste à régler à l'hôtel</span><span>"+fmt(tot-dep)+"</span></div>":"");
+  m.textContent="Disponible ✓";m.className="bmsg ok";go.disabled=false;
+}
+function closeBook(){E("bov").classList.remove("on");E("bgo").dataset.done="0"}
+E("ba").onchange=function(){E("bd").min=this.value||iso(1);bcalc()};
+E("bd").onchange=bcalc;
+E("bx").onclick=closeBook;
+E("bov").onclick=function(e){if(e.target==this)closeBook()};
+document.addEventListener("keydown",function(e){if(e.key=="Escape")closeBook()});
+
+E("bgo").onclick=async function(){
+  var a=E("ba").value,d=E("bd").value,g=parseInt(E("bgu").value,10),m=E("bmsg"),btn=E("bgo");
+  if(!user){
+    m.textContent="Connectez-vous ou créez un compte pour finaliser votre réservation.";m.className="bmsg";
+    btn.style.display="none";E("blog").style.display="block";return;
+  }
+  btn.disabled=true;btn.textContent="Un instant…";
+  var r=await db.from("bookings").insert({user_id:user.id,room_id:bcur.id,check_in:a,check_out:d,guests:g}).select("id,total_price").single();
+  btn.textContent="Confirmer la réservation";
   if(r.error){
-    line("ko","1. Lecture des chambres : échec","<div>"+r.error.message+"</div>");
-  }else{
-    var li = r.data.map(function(x){return "<li>"+x.name+" — "+Number(x.price_per_night).toLocaleString("fr-FR")+" FCFA, "+x.capacity+" pers.</li>"}).join("");
-    line(r.data.length?"ok":"w8","1. Lecture des chambres : "+(r.data.length?"réussie ✓":"aucune chambre trouvée"),"<ul>"+li+"</ul>");
+    var msg=String(r.error.message||"");
+    if(r.error.code==="23P01"||/no_double_booking|conflicting/i.test(msg)){m.textContent="Cette chambre vient d'être réservée sur ces dates. Choisissez d'autres dates.";busy.push({check_in:a,check_out:d});}
+    else if(/Trop de personnes/i.test(msg))m.textContent="Trop de personnes pour cette chambre.";
+    else if(/indisponible/i.test(msg))m.textContent="Cette chambre n'est plus disponible.";
+    else if(/pass/i.test(msg))m.textContent="La date d'arrivée est déjà passée.";
+    else m.textContent="La réservation n'a pas pu être enregistrée. Réessayez dans un instant.";
+    m.className="bmsg";btn.disabled=false;return;
   }
+  btn.dataset.done="1";
+  var pct=Math.min(100,Math.max(0,parseInt(SET.deposit_percent,10)||0)),dep=Math.round(r.data.total_price*pct/100/500)*500;
+  m.className="bmsg ok";
+  m.textContent="Réservation FH-"+r.data.id+" enregistrée ✓ Statut : en attente."+(pct>0?" L'acompte de "+fmt(dep)+" pourra être réglé en ligne très bientôt. En attendant, l'hôtel confirmera votre réservation.":"");
+  btn.style.display="none";E("bpay").style.display="block";
+};
 
-  // 2. Réglages publics (acompte, annulation...)
-  var s = await db.from("hotel_settings").select("key, value");
-  if(s.error){
-    line("ko","2. Lecture des réglages : échec","<div>"+s.error.message+"</div>");
-  }else{
-    line("ok","2. Lecture des réglages : réussie ✓","<ul>"+s.data.map(function(x){return "<li>"+x.key+" = "+x.value+"</li>"}).join("")+"</ul>");
-  }
+/* ---------- Compte du visiteur ---------- */
+async function checkUser(){
+  if(!db)return;
+  var g=await db.auth.getSession();
+  user=g.data&&g.data.session?g.data.session.user:null;
+  E("mAuth").textContent=user?"Mon espace":"Connexion / Inscription";
+  E("mOut").style.display=user?"block":"none";
+}
+if(db){
+  db.auth.onAuthStateChange(function(){checkUser()});
+  E("mOut").onclick=async function(){await db.auth.signOut();menu(false)};
+}
 
-  // 3. Sécurité : un visiteur ne doit PAS voir ces tables
-  var blocked = [["app_settings","l'e-mail du propriétaire"],["bookings","les réservations"],["profiles","les profils clients"],["payments","les paiements"],["messages","les messages"]];
-  for(var i=0;i<blocked.length;i++){
-    var t = await db.from(blocked[i][0]).select("*").limit(1);
-    var name = blocked[i][0], what = blocked[i][1];
-    var msg = t.error ? String(t.error.message||"") : "";
-    var denied = t.error && (t.error.code==="42501" || /permission denied|row-level security/i.test(msg));
-    if(denied || (!t.error && t.data && t.data.length===0)){
-      line("ok","3. Sécurité de « "+name+" » : protégée ✓","<div>Un visiteur non connecté ne voit pas "+what+".</div>");
-    }else if(t.error){
-      line("w8","3. « "+name+" » : test impossible","<div>Le test n'a pas pu se faire ("+msg+"). Ce n'est pas une preuve de sécurité.</div>");
-    }else{
-      line("ko","3. Sécurité de « "+name+" » : VISIBLE par n'importe qui ✗","<div>Un visiteur ne doit pas voir "+what+".</div>");
-    }
-  }
-})();
+var PH=[
+ {t:"Chambre Nature",k:"Chambres",c:["#8c9a5b","#4b4a24"]},
+ {t:"Jardin et allées",k:"Extérieur",c:["#6f8a4c","#2f4a2a"]},
+ {t:"Suite Famille",k:"Chambres",c:["#c9a46b","#7a5a2e"]},
+ {t:"Terrasse privée",k:"Extérieur",c:["#7a8a5a","#3d3a22"]},
+ {t:"Salle de bain",k:"Détente",c:["#a9b8a8","#4f6658"]},
+ {t:"Suite Prestige",k:"Chambres",c:["#5d6f78","#2f3d3a"]},
+ {t:"Coin lecture",k:"Détente",c:["#b88a5a","#5a3d24"]},
+ {t:"Petit-déjeuner",k:"Détente",c:["#d1a44a","#7a4f1f"]}
+];
+var gcat="Tous",gl=[],gi=0;
+function bg(p,a){return "linear-gradient("+(a||135)+"deg,"+p.c[0]+","+p.c[1]+" 60%,#1f1710)"}
+function gallery(){
+  var cats=["Tous","Chambres","Extérieur","Détente"];
+  document.getElementById("gchips").innerHTML=cats.map(function(c){return '<button class="gch'+(c==gcat?' on':'')+'" data-c="'+c+'" type="button">'+c+'</button>'}).join("");
+  gl=PH.filter(function(p){return gcat=="Tous"||p.k==gcat});
+  document.getElementById("gg").innerHTML=gl.map(function(p,i){
+    return '<button class="gt'+(gcat=="Tous"&&(i==0||i==5)?' tall':'')+'" data-i="'+i+'" type="button" style="background:'+bg(p,120+i*20)+'">'+p.t+'</button>';
+  }).join("");
+  document.querySelectorAll(".gch").forEach(function(b){b.onclick=function(){gcat=b.dataset.c;gallery()}});
+  document.querySelectorAll(".gt").forEach(function(b){b.onclick=function(){show(+b.dataset.i)}});
+}
+function show(i){
+  gi=(i+gl.length)%gl.length;
+  document.getElementById("lv").style.background=bg(gl[gi],150);
+  document.getElementById("lt").textContent=gl[gi].t+" · "+(gi+1)+"/"+gl.length;
+  document.getElementById("lb").classList.add("on");
+}
+function closeLb(){document.getElementById("lb").classList.remove("on")}
+document.getElementById("lx").onclick=closeLb;
+document.getElementById("lp").onclick=function(){show(gi-1)};
+document.getElementById("ln").onclick=function(){show(gi+1)};
+document.getElementById("lb").onclick=function(e){if(e.target==this)closeLb()};
+document.addEventListener("keydown",function(e){
+  if(!document.getElementById("lb").classList.contains("on"))return;
+  if(e.key=="Escape")closeLb();if(e.key=="ArrowLeft")show(gi-1);if(e.key=="ArrowRight")show(gi+1);
+});
+gallery();
+function menu(o){
+  document.getElementById("menu").classList.toggle("on",o);
+  document.getElementById("bg").setAttribute("aria-expanded",o?"true":"false");
+}
+document.getElementById("bg").onclick=function(e){e.stopPropagation();menu(!document.getElementById("menu").classList.contains("on"))};
+document.addEventListener("click",function(e){if(!document.getElementById("menu").contains(e.target))menu(false)});
+document.addEventListener("keydown",function(e){if(e.key=="Escape")menu(false)});
+document.querySelectorAll("[data-go]").forEach(function(b){
+  b.onclick=function(){
+    menu(false);
+    if(b.dataset.go=="top"){window.scrollTo({top:0,behavior:"smooth"});return}
+    setTimeout(function(){
+      var el=document.getElementById(b.dataset.go);
+      var y=el.getBoundingClientRect().top+(window.pageYOffset||document.documentElement.scrollTop)-20;
+      window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+    },60);
+  };
+});
+
+load();checkUser();
 </script>
 </body>
 </html>
