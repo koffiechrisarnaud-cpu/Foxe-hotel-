@@ -49,7 +49,8 @@ h2{font-size:clamp(32px,8vw,44px);margin:6px 0 18px}
 .phw{position:relative}
 .ph.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:var(--sage)}
 .ph.slides::-webkit-scrollbar{display:none}
-.ph.slides>i{flex:0 0 100%;scroll-snap-align:center;background-size:cover;background-position:center;display:block}
+.ph.slides>i{flex:0 0 100%;scroll-snap-align:center;display:block;position:relative;overflow:hidden}
+.ph.slides>i>b{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;display:block}
 .pc{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;border-radius:99px;padding:2px 9px;pointer-events:none}
 .room .in{padding:16px}
 .room p{color:var(--muted);font-size:14px;margin:6px 0 12px}
@@ -114,7 +115,21 @@ details p{color:var(--muted);margin-top:8px;font-size:14px}
 .lc{display:flex;align-items:center;gap:16px;margin-top:16px;color:#f1eadf;font-size:14px}
 .lc button,.lx{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;font-size:22px;cursor:pointer}
 .lx{position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top,0px))}
-footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30px}
+.rev-sum{display:flex;align-items:center;gap:14px;margin:-4px 0 14px}
+.rev-sum b{font:600 44px "Cormorant Garamond",Georgia,serif;line-height:1}
+.stars{color:var(--gold);letter-spacing:2px;font-size:17px}
+.rvs{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;scrollbar-width:none}
+.rvs::-webkit-scrollbar{display:none}
+.rv{flex:0 0 min(86%,340px);scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px}
+.rv p{font-size:14px;margin:8px 0;color:var(--ink);word-break:break-word}
+.rv small{color:var(--muted);font-size:12px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:34px 18px calc(22px + env(safe-area-inset-bottom,0px));margin-top:36px;border-top:1px solid var(--line)}
+.fol{margin-bottom:20px}
+.fol h4{font:500 24px "Cormorant Garamond",Georgia,serif;color:var(--ink);margin-bottom:12px}
+.fol .soc{display:flex;gap:12px;justify-content:center}
+.fol .soc a{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--olive);background:var(--card);text-decoration:none}
+.sig{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12px}
+.sig b{font-weight:600;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -132,6 +147,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30p
           <button type="button" data-go="services">Nos services</button>
           <button type="button" data-go="galerie">Galerie photo</button>
           <button type="button" data-go="faq">Questions fréquentes</button>
+          <button type="button" data-go="avis">Avis</button>
           <a href="contact.html">Contact</a>
           <a href="connexion.html" class="sep" id="mAuth">Connexion / Inscription</a>
           <button type="button" id="mOut" style="display:none">Se déconnecter</button>
@@ -189,6 +205,13 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30p
   <details><summary>Quelle est l'heure d'arrivée ?</summary><p>Arrivée à partir de 14h, départ avant 12h.</p></details>
   <details><summary>Puis-je annuler ma réservation ?</summary><p>Oui, depuis votre espace client, dans le délai d'annulation gratuite indiqué plus haut.</p></details>
   <details><summary>Quels moyens de paiement ?</summary><p>Un acompte est demandé à la réservation, le reste se règle à l'hôtel.</p></details>
+
+  <div id="avBox" style="display:none">
+    <div class="eyebrow" id="avis">Avis de nos clients</div>
+    <h2>Ils ont séjourné chez nous</h2>
+    <div class="rev-sum"><b id="avAvg"></b><div><div class="stars" id="avSt"></div><small id="avN" style="color:var(--muted)"></small></div></div>
+    <div class="rvs" id="rvs"></div>
+  </div>
 </main>
 
 <div class="bov" id="bov"><div class="bsh">
@@ -214,7 +237,11 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30p
   <div class="lc"><button type="button" id="lp" aria-label="Photo précédente">‹</button><span id="lt"></span><button type="button" id="ln" aria-label="Photo suivante">›</button></div>
 </div>
 
-<footer>© Foxe Hôtel</footer>
+<footer>
+  <div class="fol" id="fol" style="display:none"><h4>Nous suivre</h4><div class="soc" id="fsoc"></div></div>
+  <div>© Foxe Hôtel</div>
+  <div class="sig">Site créé par <b>Next Création</b></div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
@@ -225,7 +252,7 @@ var E=function(i){return document.getElementById(i)};
 var fmt=function(n){return Number(n).toLocaleString("fr-FR")+" FCFA"};
 var DMS=864e5;
 var GR=[["#8c9a5b","#4b4a24"],["#c9a46b","#7a5a2e"],["#5d6f78","#2f3d3a"],["#a9b8a8","#4f6658"]];
-var RPH={},SVC=[],HRS=[],GAL=[];
+var RPH={},SVC=[],HRS=[],GAL=[],REV=[];
 var ROOMS=[],SET={deposit_percent:"30",free_cancel_hours:"48"},busy=[],bcur=null,user=null;
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 
@@ -247,14 +274,16 @@ async function load(){
   var s=await db.from("hotel_settings").select("key,value");
   if(!s.error&&s.data)s.data.forEach(function(x){SET[x.key]=x.value});
   var q=await Promise.all([
-    db.from("room_photos").select("room_id,url,position").order("position").order("id"),
+    db.from("room_photos").select("room_id,url,position,focus_x,focus_y,zoom").order("position").order("id"),
     db.from("services").select("id,title,description,icon,position").eq("is_active",true).order("position").order("id"),
     db.from("opening_hours").select("id,label,value,position").order("position").order("id"),
-    db.from("gallery_photos").select("id,url,caption,category,position").order("position").order("id")
+    db.from("gallery_photos").select("id,url,caption,category,position").order("position").order("id"),
+    db.from("reviews").select("rating,comment,author_name,created_at,rooms(name)").eq("is_published",true).order("created_at",{ascending:false}).limit(100)
   ]);
-  RPH={};(q[0].data||[]).forEach(function(p){(RPH[p.room_id]=RPH[p.room_id]||[]).push(p.url)});
-  SVC=q[1].data||[];HRS=q[2].data||[];GAL=q[3].data||[];
-  render();content();
+  if(q[0].error){q[0]=await db.from("room_photos").select("room_id,url,position").order("position").order("id")}
+  RPH={};(q[0].data||[]).forEach(function(p){(RPH[p.room_id]=RPH[p.room_id]||[]).push({u:p.url,x:p.focus_x,y:p.focus_y,z:p.zoom})});
+  SVC=q[1].data||[];HRS=q[2].data||[];GAL=q[3].data||[];REV=q[4].data||[];
+  render();content();reviewsUI();
 }
 function render(){
   E("stN").textContent=ROOMS.length;
@@ -263,12 +292,13 @@ function render(){
   E("msg").textContent="";
   E("rooms").innerHTML=ROOMS.map(function(r,i){
     var g=GR[i%GR.length];
-    var imgs=(RPH[r.id]&&RPH[r.id].length)?RPH[r.id]:(r.image_url?[r.image_url]:[]);
+    var imgs=(RPH[r.id]&&RPH[r.id].length)?RPH[r.id]:(r.image_url?[{u:r.image_url,x:50,y:50,z:100}]:[]);
     var ph;
-    if(imgs.length>1){
-      ph='<div class="phw"><div class="ph slides">'+imgs.map(function(u){return '<i style="background-image:url(\''+encodeURI(u)+'\')"></i>'}).join("")+'</div><span class="pc">1/'+imgs.length+'</span></div>';
-    }else if(imgs.length==1){
-      ph='<div class="ph" style="background:url(\''+encodeURI(imgs[0])+'\') center/cover"></div>';
+    if(imgs.length){
+      ph='<div class="phw"><div class="ph slides">'+imgs.map(function(m){
+        var x=(m.x==null?50:m.x),y=(m.y==null?50:m.y),z=(m.z||100)/100;
+        return '<i><b style="background-image:url(\''+encodeURI(m.u)+'\');background-position:'+x+'% '+y+'%;transform:scale('+z+');transform-origin:'+x+'% '+y+'%"></b></i>';
+      }).join("")+'</div>'+(imgs.length>1?'<span class="pc">1/'+imgs.length+'</span>':'')+'</div>';
     }else{
       ph='<div class="ph" style="background:linear-gradient(135deg,'+g[0]+','+g[1]+' 55%,#2a2118)"></div>';
     }
@@ -377,6 +407,49 @@ function content(){
   PH=GAL.map(function(g){return {u:g.url,t:g.caption||g.category,k:g.category}});
   gallery();showSec("galerie","galerie",PH.length>0);
 }
+var SOCI={
+  social_facebook:["Facebook",'<path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.6-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8v3h2.7V21h2.8z"/>'],
+  social_instagram:["Instagram",'<rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1"/>'],
+  social_tiktok:["TikTok",'<path d="M16.5 3h-2.8v11.4a2.4 2.4 0 1 1-2.4-2.4c.3 0 .5 0 .7.1V9.2a5.2 5.2 0 1 0 4.5 5.1V8.7c1 .8 2.2 1.2 3.5 1.2V7.1c-1.8 0-3.5-1.5-3.5-4.1z"/>']
+};
+function safeUrl(u){u=String(u||"").trim();return /^https?:\/\//i.test(u)?u:""}
+function footerSocial(){
+  var h="";
+  Object.keys(SOCI).forEach(function(k){
+    var u=safeUrl(SET[k]);
+    if(u)h+='<a href="'+u.replace(/"/g,"%22")+'" target="_blank" rel="noopener" aria-label="'+SOCI[k][0]+'"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">'+SOCI[k][1]+'</svg></a>';
+  });
+  E("fsoc").innerHTML=h;E("fol").style.display=h?"":"none";
+}
+function starsTxt(n){var s="";for(var i=1;i<=5;i++)s+=i<=n?"★":"☆";return s}
+function reviewsUI(){
+  footerSocial();
+  if(!REV.length){showSec("avBox","avis",false);return}
+  var avg=REV.reduce(function(s,r){return s+r.rating},0)/REV.length;
+  E("avAvg").textContent=avg.toFixed(1).replace(".",",");
+  E("avSt").textContent=starsTxt(Math.round(avg));
+  E("avN").textContent=REV.length+" avis";
+  E("rvs").innerHTML=REV.slice(0,12).map(function(r){
+    var d=new Date(r.created_at).toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+    return '<div class="rv"><div class="stars">'+starsTxt(r.rating)+'</div>'+(r.comment?'<p>« '+esc(r.comment)+' »</p>':'<p style="color:var(--muted)">Séjour noté '+r.rating+'/5</p>')+
+      '<small><b>'+esc(r.author_name||"Client")+'</b>'+(r.rooms&&r.rooms.name?' · '+esc(r.rooms.name):'')+' · '+d+'</small></div>';
+  }).join("");
+  showSec("avBox","avis",true);
+}
+var apOff=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+["pointerdown","touchstart","wheel"].forEach(function(ev){
+  document.addEventListener(ev,function(e){var s=e.target&&e.target.closest?e.target.closest(".slides"):null;if(s)s.dataset.pz=String(Date.now()+12000)},{passive:true});
+});
+setInterval(function(){
+  if(apOff||document.hidden)return;
+  document.querySelectorAll(".slides").forEach(function(sl){
+    var n=sl.children.length;if(n<2)return;
+    if(Date.now()<(+sl.dataset.pz||0))return;
+    var r=sl.getBoundingClientRect();if(r.bottom<0||r.top>(window.innerHeight||800))return;
+    var i=Math.round(sl.scrollLeft/(sl.clientWidth||1));
+    sl.scrollTo({left:((i+1)%n)*sl.clientWidth,behavior:"smooth"});
+  });
+},5000);
 function gallery(){
   var cats=["Tous"];PH.forEach(function(p){if(cats.indexOf(p.k)<0)cats.push(p.k)});
   if(cats.indexOf(gcat)<0)gcat="Tous";
