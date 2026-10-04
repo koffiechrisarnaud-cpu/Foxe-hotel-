@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google" content="notranslate">
+<title>Foxe Hôtel – Administration</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f5f1ea;--card:#fffdf9;--ink:#2a2118;--muted:#6f655a;--olive:#4b4a24;--gold:#c08a3e;--line:#e2dccf;--dark:#1f1710;--err:#b3412f;--ok:#3f6b3a;--warn:#9a6a1c;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#17120d;--card:#221b14;--ink:#f1eadf;--muted:#b3a899;--olive:#8a8847;--line:#352c22;--dark:#0f0b08;--err:#e07a66;--ok:#8fc287;--warn:#e0b25c}
+}
+:root[data-theme="dark"]{--bg:#17120d;--card:#221b14;--ink:#f1eadf;--muted:#b3a899;--olive:#8a8847;--line:#352c22;--dark:#0f0b08;--err:#e07a66;--ok:#8fc287;--warn:#e0b25c}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;line-height:1.5;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-height:1.1}
+.wrap{max-width:760px;margin:0 auto;padding:0 14px 40px}
+.bar{display:flex;justify-content:space-between;align-items:center;padding:14px 2px}
+.logo{font:600 22px "Cormorant Garamond",Georgia,serif}.logo small{font:500 11px "DM Sans",system-ui,sans-serif;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-left:6px}
+.mw{position:relative}
+.burger{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;position:relative}
+.dot{position:absolute;top:-2px;right:-2px;background:var(--err);color:#fff;border-radius:99px;font-size:10px;min-width:18px;height:18px;display:grid;place-items:center;padding:0 4px}
+.menu{display:none;position:absolute;right:0;top:52px;min-width:230px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:6px;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.menu.on{display:block}
+.menu button{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:13px 14px;border-radius:12px;font:500 15px "DM Sans",system-ui,sans-serif;cursor:pointer}
+.menu button.cur{background:var(--bg)}.menu button[disabled]{color:var(--muted);cursor:default}
+.menu .d{color:var(--err);border-top:1px solid var(--line);border-radius:0 0 12px 12px;margin-top:4px}
+.menu em{font-style:normal;font-size:11px;color:var(--muted)}
+.hi h1{font-size:34px;margin:6px 0 2px}.hi p{color:var(--muted);font-size:14px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px}
+.st.dk{background:var(--dark);color:#f1eadf;border-color:var(--dark)}
+.st b{display:block;font:600 32px "Cormorant Garamond",Georgia,serif;line-height:1}
+.st span{font-size:12px;color:var(--muted)}.st.dk span{color:#b3a899}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin-top:12px}
+.panel h2{font-size:24px;margin-bottom:10px}
+.occ{display:flex;align-items:center;gap:16px}
+.occ svg{flex:none}.occ p{color:var(--muted);font-size:13px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:110px;margin-top:6px}
+.bars div{flex:1;text-align:center;font-size:11px;color:var(--muted)}
+.bars i{display:block;background:var(--olive);border-radius:8px 8px 4px 4px;margin:0 auto 4px;width:100%;min-height:4px}
+.bars b{display:block;color:var(--ink);font-size:12px;margin-bottom:2px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:8px 14px;font:500 13px "DM Sans",system-ui,sans-serif;white-space:nowrap;cursor:pointer}
+.chip.on{background:var(--olive);color:#fff;border-color:var(--olive)}
+.srch{width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:16px "DM Sans",system-ui,sans-serif;margin:8px 0 6px}
+.bk{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.top b{font-size:16px}.sub{color:var(--muted);font-size:13px}
+.badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.b-confirmed{color:var(--ok)}.b-pending{color:var(--warn)}.b-cancelled{color:var(--err)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:14px;flex-wrap:wrap}
+.acts{display:flex;gap:8px}
+.a{border-radius:99px;padding:8px 14px;font:500 13px "DM Sans",system-ui,sans-serif;cursor:pointer;border:1px solid var(--olive);background:var(--olive);color:#fff}
+.a.o{background:none;color:var(--err);border-color:var(--err)}
+.ask{display:none;margin-top:10px;padding:12px;border-radius:14px;background:var(--bg);font-size:13px}
+.ask.on{display:block}
+.ask button{margin:8px 8px 0 0;border-radius:99px;padding:8px 14px;font:500 13px "DM Sans",system-ui,sans-serif;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.ask .y{background:var(--err);color:#fff;border-color:var(--err)}
+.empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:14px}
+.v{display:none}.v.on{display:block}
+.add{width:100%;background:var(--olive);color:#fff;border:0;border-radius:99px;padding:14px;font:500 15px "DM Sans",system-ui,sans-serif;cursor:pointer;margin-bottom:6px}
+.rm{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px}
+.rm.off{opacity:.65}
+.rm h3{font-size:24px}
+.sw{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;border:0;background:none;font-family:inherit}
+.sw i{width:40px;height:24px;border-radius:99px;background:var(--line);position:relative;display:block;transition:.2s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.sw.on i{background:var(--ok)}.sw.on i::after{left:19px}
+.ov{display:none;position:fixed;inset:0;background:rgba(15,10,6,.55);z-index:30;align-items:flex-end;justify-content:center}
+.ov.on{display:flex}
+.sheet{position:relative;width:100%;max-width:520px;background:var(--card);border-radius:26px 26px 0 0;max-height:92%;overflow-y:auto;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet h2{font-size:28px;margin-bottom:6px}
+.sheet label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px}
+.inp{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:16px "DM Sans",system-ui,sans-serif}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.x{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.err{color:var(--err);font-size:13px;min-height:18px;margin-top:8px}
+.save{width:100%;background:var(--olive);color:#fff;border:0;border-radius:99px;padding:14px;font:500 16px "DM Sans",system-ui,sans-serif;cursor:pointer}
+.cr{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:10px;cursor:pointer;color:var(--ink);font-family:inherit;font-size:15px}
+.avt{width:42px;height:42px;border-radius:50%;background:var(--olive);color:#fff;display:grid;place-items:center;font:600 19px "Cormorant Garamond",Georgia,serif;flex:none}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.mini div{background:var(--bg);border-radius:14px;padding:10px 6px;text-align:center}
+.mini b{display:block;font:600 21px "Cormorant Garamond",Georgia,serif}.mini span{font-size:11px;color:var(--muted)}
+.panel label{display:block;font-size:12px;color:var(--muted);margin:0 0 4px}
+.ask .okb{background:var(--ok);color:#fff;border-color:var(--ok)}
+.thumb{width:100%;height:110px;border-radius:14px;margin-bottom:10px;background:linear-gradient(135deg,#8c9a5b,#4b4a24)}
+.msgc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px}
+.msgc.new{border-color:var(--gold)}
+.msgc p{font-size:14px;margin:8px 0;white-space:pre-wrap;word-break:break-word}
+.link{border:0;background:none;color:var(--olive);font:500 13px "DM Sans",system-ui,sans-serif;cursor:pointer;margin-top:8px}
+#toast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:99px;font-size:14px;z-index:40;max-width:90%;text-align:center}
+</style>
+</head>
+<body>
+<div id="gate" style="display:none;padding:50px 20px;text-align:center;max-width:420px;margin:0 auto">
+  <h1 style="font-size:36px">Accès réservé</h1>
+  <p class="sub" id="gp" style="margin:10px 0 18px;font-size:15px"></p>
+  <a class="add" id="gl" href="connexion.html" style="display:none;text-decoration:none;text-align:center">Se connecter</a>
+  <a class="add" href="index.html" style="display:block;text-decoration:none;text-align:center;background:none;color:var(--olive);border:1.5px solid var(--olive)">Retour à l'accueil</a>
+</div>
+<div class="wrap" id="app" style="display:none">
+  <div class="bar">
+    <span class="logo">Foxe Hôtel<small>Admin</small></span>
+    <div class="mw">
+      <button class="burger" id="bg" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <span class="dot" id="dot"></span>
+      </button>
+      <nav class="menu" id="menu">
+        <button type="button" data-v="1" class="cur">Tableau de bord</button>
+        <button type="button" data-v="2">Réservations <em id="mp"></em></button>
+        <button type="button" data-v="3">Gestion des chambres</button>
+        <button type="button" data-v="5">Clients inscrits</button>
+        <button type="button" data-v="7">Messages <em id="mm"></em></button>
+        <button type="button" data-v="4">Équipe</button>
+        <button type="button" data-v="6">Paramètres</button>
+        <button type="button" id="msite">Voir le site</button>
+        <button type="button" class="d" id="logout">Se déconnecter</button>
+      </nav>
+    </div>
+  </div>
+
+  <section class="v on" id="v1">
+    <div class="hi"><h1 id="hello">Bonjour</h1><p id="today"></p></div>
+    <div class="grid">
+      <div class="st dk"><b id="s1">0</b><span>Arrivées aujourd'hui</span></div>
+      <div class="st"><b id="s2">0</b><span>Chambres occupées</span></div>
+      <div class="st"><b id="s3">0</b><span>Chambres libres</span></div>
+      <div class="st"><b id="s4">0</b><span>En attente de validation</span></div>
+    </div>
+    <div class="panel">
+      <h2>Occupation du jour</h2>
+      <div class="occ">
+        <svg width="104" height="104" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--line)" stroke-width="12"/>
+          <circle id="ring" cx="50" cy="50" r="40" fill="none" stroke="var(--olive)" stroke-width="12" stroke-linecap="round" stroke-dasharray="0 251.3" transform="rotate(-90 50 50)"/>
+          <text id="pct" x="50" y="56" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)" font-family="DM Sans,system-ui,sans-serif">0%</text>
+        </svg>
+        <div><b id="rev" style="font:600 26px 'Cormorant Garamond',Georgia,serif"></b><p>d'acomptes encaissés ce mois-ci</p></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Arrivées des 7 prochains jours</h2>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="panel">
+      <h2>Dernières réservations</h2>
+      <div id="last"></div>
+      <button class="link" type="button" data-v="2">Voir toutes les réservations →</button>
+    </div>
+  </section>
+
+  <section class="v" id="v2">
+    <div class="hi"><h1>Réservations</h1><p>Confirmez ou annulez les demandes des clients.</p></div>
+    <input class="srch" id="q" placeholder="Rechercher un client ou une chambre">
+    <div class="chips" id="chips"></div>
+    <div id="list"></div>
+  </section>
+
+  <section class="v" id="v3">
+    <div class="hi"><h1>Gestion des chambres</h1><p>Ajoutez, modifiez ou désactivez les chambres de l'hôtel.</p></div>
+    <button class="add" id="addr" type="button">+ Ajouter une chambre</button>
+    <div id="rlist"></div>
+  </section>
+
+  <section class="v" id="v4">
+    <div class="hi"><h1>Équipe</h1><p>Choisissez qui peut accéder à l'administration.</p></div>
+    <div class="panel" style="margin-top:0">
+      <h2>Administrateurs</h2>
+      <div id="alist"></div>
+    </div>
+    <div class="panel">
+      <h2>Ajouter un administrateur</h2>
+      <p class="sub" style="margin-bottom:10px">La personne doit d'abord créer un compte sur le site. Saisissez ensuite son e-mail.</p>
+      <input class="inp" id="te" type="email" inputmode="email" placeholder="e-mail de la personne">
+      <div class="err" id="tm"></div>
+      <button class="add" id="tg" type="button" style="margin:8px 0 0">Donner le rôle admin</button>
+    </div>
+  </section>
+
+  <section class="v" id="v5">
+    <div class="hi"><h1>Clients inscrits</h1><p>Du plus récent au plus ancien. Touchez un client pour ouvrir sa fiche.</p></div>
+    <input class="srch" id="cq" placeholder="Rechercher un client">
+    <div id="clist"></div>
+  </section>
+
+  <section class="v" id="v6">
+    <div class="hi"><h1>Paramètres</h1><p>Les réglages de l'hôtel utilisés par le site.</p></div>
+    <div class="panel" style="margin-top:0">
+      <h2>Acompte</h2>
+      <label for="sp">Pourcentage demandé à la réservation</label>
+      <div class="g2"><input class="inp" id="sp" type="number" inputmode="numeric" min="0" max="100" step="5"><div class="sub" style="align-self:center">% du total du séjour</div></div>
+      <div class="sub" id="sx" style="margin-top:10px"></div>
+    </div>
+    <div class="panel">
+      <h2>Annulation</h2>
+      <label for="sc">Annulation gratuite jusqu'à (heures avant l'arrivée)</label>
+      <input class="inp" id="sc" type="number" inputmode="numeric" min="0" max="720" step="12">
+    </div>
+    <div class="panel">
+      <h2>Moyens de paiement proposés</h2>
+      <div id="sm"></div>
+    </div>
+    <div class="err" id="se"></div>
+    <button class="add" id="ss" type="button">Enregistrer les paramètres</button>
+  </section>
+
+  <section class="v" id="v7">
+    <div class="hi"><h1>Messages</h1><p>Les messages envoyés depuis la page Contact du site.</p></div>
+    <div id="mlist"></div>
+  </section>
+
+  <div class="ov" id="cov"><div class="sheet">
+    <button class="x" id="cxx" type="button" aria-label="Fermer">✕</button>
+    <div id="cbody"></div>
+  </div></div>
+
+  <div class="ov" id="ov"><div class="sheet">
+    <button class="x" id="cx" type="button" aria-label="Fermer">✕</button>
+    <h2 id="ft">Nouvelle chambre</h2>
+    <label for="fn">Nom</label><input class="inp" id="fn" placeholder="Ex. Chambre Nature">
+    <label for="fd">Description</label><input class="inp" id="fd" placeholder="Une phrase pour décrire la chambre">
+    <div class="g2">
+      <div><label for="fp">Prix par nuit (FCFA)</label><input class="inp" id="fp" type="number" inputmode="numeric" min="0" step="500"></div>
+      <div><label for="fc">Capacité (personnes)</label><input class="inp" id="fc" type="number" inputmode="numeric" min="1" max="10"></div>
+    </div>
+    <label for="fph">Photo de la chambre</label>
+    <input class="inp" id="fph" type="file" accept="image/*">
+    <div class="sub" id="fpn" style="margin-top:6px"></div>
+    <div class="err" id="fe"></div>
+    <button class="save" id="fs" type="button">Enregistrer</button>
+  </div></div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+var C=window.FOXE||{};
+var $=function(i){return document.getElementById(i)};
+var fmt=function(n){return Number(n||0).toLocaleString("fr-FR")+" FCFA"};
+var DMS=864e5;
+var db=window.supabase&&C.SUPABASE_URL?window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_KEY):null;
+var me=null,myName="";
+var ROOMS=[],BK=[],PAYS=[],PRF=[],MSG=[];
+var SET={deposit_percent:"30",free_cancel_hours:"48",payment_methods:"om,mtn,moov,wave,card,hotel"};
+var LABEL={confirmed:"Confirmée",pending:"En attente",cancelled:"Annulée"};
+var PMN={om:"Orange Money",mtn:"MTN Mobile Money",moov:"Moov Money",wave:"Wave",card:"Carte bancaire",hotel:"Payer à l'hôtel"};
+var filter="all",q="",editId=null;
+
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function pad(n){return String(n).padStart(2,"0")}
+function isoOf(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function todayIso(){return isoOf(new Date())}
+function plusIso(n){return isoOf(new Date(Date.now()+n*DMS))}
+function ds(s){return new Date(s+"T00:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}
+function dl(s){return new Date(s).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"})}
+function toast(t){var e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(function(){e.style.display="none"},3000)}
+function nights(b){return Math.round((new Date(b.check_out)-new Date(b.check_in))/DMS)}
+function tot(b){return Number(b.total_price)||0}
+function paidOf(id){return PAYS.filter(function(p){return p.booking_id==id&&p.status=="paid"}).reduce(function(s,p){return s+Number(p.amount)},0)}
+function pct(){return Math.min(100,Math.max(0,parseInt(SET.deposit_percent,10)||0))}
+function depOf(b){return Math.round(tot(b)*pct()/100/500)*500}
+function gate(msg,login){
+  $("app").style.display="none";$("gate").style.display="block";$("gp").textContent=msg;
+  $("gl").style.display=login?"block":"none";
+}
+
+/* ---------- Chargement ---------- */
+async function loadAll(){
+  var r=await Promise.all([
+    db.from("rooms").select("*").order("id"),
+    db.from("bookings").select("id,user_id,room_id,check_in,check_out,guests,total_price,status,created_at,rooms(name),profiles(full_name,email,phone)").order("created_at",{ascending:false}),
+    db.from("payments").select("id,booking_id,amount,method,status,created_at"),
+    db.from("profiles").select("id,full_name,email,phone,role,created_at"),
+    db.from("hotel_settings").select("key,value"),
+    db.from("messages").select("id,name,contact,subject,body,status,created_at").order("created_at",{ascending:false})
+  ]);
+  var bad=r.filter(function(x){return x.error})[0];
+  if(bad){toast("Certaines données n'ont pas pu être chargées. Actualisez la page.");}
+  ROOMS=r[0].data||[];BK=r[1].data||[];PAYS=r[2].data||[];PRF=r[3].data||[];MSG=r[5].data||[];
+  (r[4].data||[]).forEach(function(x){SET[x.key]=x.value});
+  refresh();
+}
+function refresh(){stats();list();roomsUI();team();clients();settingsUI();messages()}
+
+/* ---------- Tableau de bord ---------- */
+function stats(){
+  var today=todayIso(),active=ROOMS.filter(function(r){return r.is_active}).length;
+  var occ=BK.filter(function(b){return b.status=="confirmed"&&b.check_in<=today&&b.check_out>today}).length;
+  var arr=BK.filter(function(b){return b.status!="cancelled"&&b.check_in==today}).length;
+  var pend=BK.filter(function(b){return b.status=="pending"}).length;
+  var unread=MSG.filter(function(m){return m.status=="new"}).length;
+  var m0=new Date();m0=m0.getFullYear()+"-"+pad(m0.getMonth()+1);
+  var rev=PAYS.filter(function(p){return p.status=="paid"&&String(p.created_at).slice(0,7)==m0}).reduce(function(s,p){return s+Number(p.amount)},0);
+  $("s1").textContent=arr;$("s2").textContent=occ;$("s3").textContent=Math.max(0,active-occ);$("s4").textContent=pend;
+  var pc=active?Math.min(100,Math.round(occ/active*100)):0;
+  $("pct").textContent=pc+"%";$("ring").setAttribute("stroke-dasharray",(251.3*pc/100)+" 251.3");
+  $("rev").textContent=fmt(rev);
+  var tp=pend+unread;
+  $("dot").textContent=tp;$("dot").style.display=tp?"grid":"none";
+  $("mp").textContent=pend?pend+" en attente":"";
+  $("mm").textContent=unread?unread+" non lu"+(unread>1?"s":""):"";
+  var bars="",max=1,c=[],d;
+  for(d=0;d<7;d++){var di=plusIso(d);c[d]=BK.filter(function(b){return b.status!="cancelled"&&b.check_in==di}).length;max=Math.max(max,c[d])}
+  for(d=0;d<7;d++)bars+='<div><b>'+c[d]+'</b><i style="height:'+(8+c[d]/max*70)+'px"></i>'+new Date(Date.now()+d*DMS).toLocaleDateString("fr-FR",{weekday:"short"}).slice(0,3)+'</div>';
+  $("bars").innerHTML=bars;
+  $("last").innerHTML=BK.slice(0,4).map(function(b){
+    var cl=b.profiles||{};
+    return '<div class="row" style="border-top:1px solid var(--line);padding-top:10px"><div><b>'+esc(cl.full_name||cl.email||"Client")+'</b><div class="sub">'+esc(b.rooms?b.rooms.name:"")+' · '+ds(b.check_in)+' → '+ds(b.check_out)+'</div></div><span class="badge b-'+b.status+'">'+LABEL[b.status]+'</span></div>';
+  }).join("")||'<div class="empty">Aucune réservation pour le moment.</div>';
+}
+
+/* ---------- Réservations ---------- */
+function card(b){
+  var n=nights(b),cl=b.profiles||{},paid=paidOf(b.id),acts="",today=todayIso();
+  if(b.status=="pending")acts+='<button class="a" data-ok="'+b.id+'" type="button">Confirmer</button>';
+  if(b.status!="cancelled")acts+='<button class="a" style="background:none;color:var(--olive)" data-pay="'+b.id+'" type="button">Encaisser</button>';
+  if(b.status!="cancelled"&&b.check_out>=today)acts+='<button class="a o" data-no="'+b.id+'" type="button">Annuler</button>';
+  var payline=b.status=="cancelled"?"":(paid>0?"Payé : "+fmt(paid)+" · Reste à l'hôtel : "+fmt(Math.max(0,tot(b)-paid)):"Aucun paiement reçu"+(pct()>0?" (acompte demandé : "+fmt(depOf(b))+")":""));
+  return '<article class="bk"><div class="top"><div><b>'+esc(cl.full_name||cl.email||"Client")+'</b><div class="sub">'+esc(b.rooms?b.rooms.name:"")+' · réf. FH-'+b.id+(cl.phone?' · '+esc(cl.phone):'')+'</div></div><span class="badge b-'+b.status+'">'+LABEL[b.status]+'</span></div>'+
+    '<div class="row"><span class="sub">'+ds(b.check_in)+' → '+ds(b.check_out)+' · '+n+' nuit'+(n>1?'s':'')+' · '+b.guests+' pers.</span><b>'+fmt(tot(b))+'</b></div>'+
+    (payline?'<div class="row" style="margin-top:6px"><span class="sub">'+payline+'</span></div>':'')+
+    (acts?'<div class="row"><span></span><div class="acts" style="flex-wrap:wrap;justify-content:flex-end">'+acts+'</div></div>':'')+
+    '<div class="ask" id="ask'+b.id+'">Annuler la réservation de '+esc(cl.full_name||"ce client")+' ?<br><button class="y" data-yes="'+b.id+'" type="button">Oui, annuler</button><button data-keep="'+b.id+'" type="button">Non</button></div>'+
+    '<div class="ask" id="pay'+b.id+'">Montant reçu (FCFA)<br><input class="inp" id="pa'+b.id+'" type="number" inputmode="numeric" min="0" step="500" value="'+Math.max(0,paid>0?tot(b)-paid:depOf(b))+'" style="margin-top:6px"><br><button class="okb" data-pys="'+b.id+'" type="button">Enregistrer</button><button data-pyn="'+b.id+'" type="button">Fermer</button></div></article>';
+}
+function list(){
+  var F=[["all","Toutes"],["pending","En attente"],["confirmed","Confirmées"],["cancelled","Annulées"]];
+  $("chips").innerHTML=F.map(function(f){
+    var n=f[0]=="all"?BK.length:BK.filter(function(b){return b.status==f[0]}).length;
+    return '<button class="chip'+(filter==f[0]?' on':'')+'" data-f="'+f[0]+'" type="button">'+f[1]+' ('+n+')</button>';
+  }).join("");
+  var items=BK.filter(function(b){
+    var cl=b.profiles||{};
+    return (filter=="all"||b.status==filter)&&((cl.full_name||"")+" "+(cl.email||"")+" "+(b.rooms?b.rooms.name:"")+" FH-"+b.id).toLowerCase().indexOf(q)>-1;
+  });
+  $("list").innerHTML=items.length?items.map(card).join(""):'<div class="empty">Aucune réservation trouvée.</div>';
+  document.querySelectorAll("[data-f]").forEach(function(x){x.onclick=function(){filter=x.dataset.f;list()}});
+  document.querySelectorAll("[data-ok]").forEach(function(x){x.onclick=function(){setStatus(+x.dataset.ok,"confirmed","Réservation confirmée.")}});
+  document.querySelectorAll("[data-no]").forEach(function(x){x.onclick=function(){$("ask"+x.dataset.no).classList.add("on")}});
+  document.querySelectorAll("[data-keep]").forEach(function(x){x.onclick=function(){$("ask"+x.dataset.keep).classList.remove("on")}});
+  document.querySelectorAll("[data-yes]").forEach(function(x){x.onclick=function(){setStatus(+x.dataset.yes,"cancelled","Réservation annulée.")}});
+  document.querySelectorAll("[data-pay]").forEach(function(x){x.onclick=function(){$("pay"+x.dataset.pay).classList.add("on")}});
+  document.querySelectorAll("[data-pyn]").forEach(function(x){x.onclick=function(){$("pay"+x.dataset.pyn).classList.remove("on")}});
+  document.querySelectorAll("[data-pys]").forEach(function(x){x.onclick=function(){addPayment(+x.dataset.pys,x)}});
+}
+async function setStatus(id,status,msg){
+  var r=await db.from("bookings").update({status:status}).eq("id",id);
+  if(r.error){toast("L'opération n'a pas pu être enregistrée.");return}
+  BK.forEach(function(b){if(b.id==id)b.status=status});
+  stats();list();toast(msg);
+}
+async function addPayment(id,btn){
+  var v=parseInt($("pa"+id).value,10);
+  if(!(v>0)){toast("Entrez un montant supérieur à 0.");return}
+  btn.disabled=true;
+  var r=await db.from("payments").insert({booking_id:id,amount:v,method:"manuel",status:"paid"}).select("id,booking_id,amount,method,status,created_at").single();
+  btn.disabled=false;
+  if(r.error){toast("Le paiement n'a pas pu être enregistré.");return}
+  PAYS.push(r.data);stats();list();toast("Paiement de "+fmt(v)+" enregistré.");
+}
+
+/* ---------- Chambres ---------- */
+function roomsUI(){
+  $("rlist").innerHTML=ROOMS.map(function(r){
+    var th=r.image_url?'<div class="thumb" style="background:url(\''+encodeURI(r.image_url)+'\') center/cover"></div>':'';
+    return '<article class="rm'+(r.is_active?'':' off')+'">'+th+'<div class="top"><div><h3>'+esc(r.name)+'</h3><div class="sub">'+esc(r.description)+'</div></div>'+
+      '<span class="badge '+(r.is_active?'b-confirmed':'b-cancelled')+'">'+(r.is_active?'Active':'Désactivée')+'</span></div>'+
+      '<div class="row"><span><b>'+fmt(r.price_per_night)+'</b> <span class="sub">/ nuit · '+r.capacity+' pers. max</span></span></div>'+
+      '<div class="row"><button class="sw'+(r.is_active?' on':'')+'" data-t="'+r.id+'" type="button"><i></i>'+(r.is_active?'Visible sur le site':'Masquée du site')+'</button>'+
+      '<button class="a" data-e="'+r.id+'" type="button">Modifier</button></div></article>';
+  }).join("")||'<div class="empty">Aucune chambre. Ajoutez-en une.</div>';
+  document.querySelectorAll("[data-e]").forEach(function(x){x.onclick=function(){form(+x.dataset.e)}});
+  document.querySelectorAll("[data-t]").forEach(function(x){x.onclick=function(){toggleRoom(+x.dataset.t)}});
+}
+async function toggleRoom(id){
+  var r=ROOMS.filter(function(x){return x.id==id})[0],nv=!r.is_active;
+  var res=await db.from("rooms").update({is_active:nv}).eq("id",id);
+  if(res.error){toast("Le changement n'a pas pu être enregistré.");return}
+  r.is_active=nv;
+  var up=BK.filter(function(b){return b.room_id==id&&b.status!="cancelled"&&b.check_out>=todayIso()}).length;
+  stats();roomsUI();
+  toast(nv?r.name+" est de nouveau visible.":r.name+" est masquée du site."+(up?" "+up+" réservation(s) à venir restent valides.":""));
+}
+function form(id){
+  editId=id;
+  var r=id?ROOMS.filter(function(x){return x.id==id})[0]:{name:"",description:"",price_per_night:"",capacity:2};
+  $("ft").textContent=id?"Modifier la chambre":"Nouvelle chambre";
+  $("fn").value=r.name;$("fd").value=r.description||"";$("fp").value=r.price_per_night;$("fc").value=r.capacity;
+  $("fph").value="";$("fpn").textContent=r.image_url?"Une photo est déjà enregistrée. Choisissez-en une autre pour la remplacer.":"";
+  $("fe").textContent="";$("ov").classList.add("on");
+}
+function closeForm(){$("ov").classList.remove("on")}
+$("addr").onclick=function(){form(0)};
+$("cx").onclick=closeForm;
+$("ov").onclick=function(e){if(e.target==$("ov"))closeForm()};
+$("fs").onclick=async function(){
+  var n=$("fn").value.trim(),d=$("fd").value.trim(),p=+$("fp").value,c=+$("fc").value,e=$("fe"),f=$("fph").files[0];
+  if(n.length<3){e.textContent="Entrez un nom (3 caractères minimum).";return}
+  if(!(p>0)){e.textContent="Entrez un prix par nuit supérieur à 0.";return}
+  if(!(c>=1&&c<=10)||c%1){e.textContent="La capacité doit être entre 1 et 10 personnes.";return}
+  if(ROOMS.some(function(x){return x.name.toLowerCase()==n.toLowerCase()&&x.id!=editId})){e.textContent="Une chambre porte déjà ce nom.";return}
+  if(f){
+    if(!/^image\//.test(f.type)){e.textContent="Le fichier choisi n'est pas une image.";return}
+    if(f.size>4*1024*1024){e.textContent="La photo est trop lourde (4 Mo maximum).";return}
+  }
+  e.textContent="";var btn=$("fs");btn.disabled=true;btn.textContent="Enregistrement…";
+  var row={name:n,description:d,price_per_night:p,capacity:c};
+  if(f){
+    var ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"jpg";
+    var path="rooms/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+    var up=await db.storage.from("room-photos").upload(path,f,{contentType:f.type,cacheControl:"3600"});
+    if(up.error){btn.disabled=false;btn.textContent="Enregistrer";e.textContent="La photo n'a pas pu être envoyée. Réessayez.";return}
+    row.image_url=db.storage.from("room-photos").getPublicUrl(path).data.publicUrl;
+  }
+  var res=editId?await db.from("rooms").update(row).eq("id",editId):await db.from("rooms").insert(row);
+  btn.disabled=false;btn.textContent="Enregistrer";
+  if(res.error){e.textContent="L'enregistrement n'a pas pu se faire. Réessayez.";return}
+  closeForm();
+  var rr=await db.from("rooms").select("*").order("id");ROOMS=rr.data||ROOMS;
+  stats();roomsUI();toast(editId?"Chambre modifiée.":"Chambre ajoutée.");
+};
+
+/* ---------- Équipe ---------- */
+function team(){
+  var ad=PRF.filter(function(u){return u.role=="admin"});
+  $("alist").innerHTML=ad.map(function(u){
+    var self=me&&u.id==me.id;
+    return '<div class="row" style="border-top:1px solid var(--line);padding:10px 0 2px"><div><b>'+esc(u.full_name||u.email)+'</b><div class="sub">'+esc(u.email)+'</div></div>'+
+      (self?'<span class="badge b-confirmed">Vous</span>':'<button class="a o" data-rm="'+u.id+'" type="button">Retirer</button>')+'</div>'+
+      '<div class="ask" id="rk'+u.id+'">Retirer le rôle admin à '+esc(u.full_name||u.email)+' ? Cette personne redeviendra cliente.<br><button class="y" data-ry="'+u.id+'" type="button">Oui, retirer</button><button data-rn="'+u.id+'" type="button">Non</button></div>';
+  }).join("");
+  document.querySelectorAll("[data-rm]").forEach(function(x){x.onclick=function(){$("rk"+x.dataset.rm).classList.add("on")}});
+  document.querySelectorAll("[data-rn]").forEach(function(x){x.onclick=function(){$("rk"+x.dataset.rn).classList.remove("on")}});
+  document.querySelectorAll("[data-ry]").forEach(function(x){x.onclick=function(){
+    var u=PRF.filter(function(p){return p.id==x.dataset.ry})[0];setRole(u.email,"client","Rôle admin retiré.");
+  }});
+}
+async function setRole(email,role,okMsg){
+  var r=await db.rpc("set_user_role",{target_email:email,new_role:role});
+  if(r.error){
+    var m=r.error.message||"";
+    toast(/au moins un/i.test(m)?"Impossible : il faut au moins un administrateur.":/Aucun compte/i.test(m)?"Aucun compte avec cet e-mail.":"L'opération n'a pas pu être effectuée.");
+    return false;
+  }
+  var p=await db.from("profiles").select("id,full_name,email,phone,role,created_at");PRF=p.data||PRF;
+  team();clients();toast(okMsg);return true;
+}
+$("tg").onclick=async function(){
+  var e=$("te").value.trim().toLowerCase(),m=$("tm");m.style.color="var(--err)";
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){m.textContent="Entrez un e-mail valide.";return}
+  var u=PRF.filter(function(x){return (x.email||"").toLowerCase()==e})[0];
+  if(!u){m.textContent="Aucun compte avec cet e-mail. La personne doit d'abord s'inscrire sur le site.";return}
+  if(u.role=="admin"){m.textContent="Cette personne est déjà administratrice.";return}
+  m.textContent="";
+  if(await setRole(e,"admin",(u.full_name||e)+" est maintenant admin."))$("te").value="";
+};
+
+/* ---------- Clients ---------- */
+function clients(){
+  var qq=($("cq").value||"").trim().toLowerCase();
+  var cl=PRF.filter(function(u){return u.role=="client"&&((u.full_name||"")+" "+(u.email||"")).toLowerCase().indexOf(qq)>-1})
+    .sort(function(a,b){return String(b.created_at).localeCompare(String(a.created_at))});
+  $("clist").innerHTML=cl.length?cl.map(function(u){
+    var n=BK.filter(function(b){return b.user_id==u.id&&b.status!="cancelled"}).length;
+    return '<button class="cr" data-c="'+u.id+'" type="button"><span class="avt">'+esc((u.full_name||u.email||"?").charAt(0).toUpperCase())+'</span><span style="flex:1;min-width:0"><b>'+esc(u.full_name||"Sans nom")+'</b><span class="sub" style="display:block;overflow:hidden;text-overflow:ellipsis">'+esc(u.email)+'</span><span class="sub" style="display:block">Inscrit le '+dl(u.created_at)+'</span></span><span class="sub">'+n+' rés.</span></button>';
+  }).join(""):'<div class="empty">Aucun client trouvé.</div>';
+  document.querySelectorAll("[data-c]").forEach(function(x){x.onclick=function(){fiche(x.dataset.c)}});
+}
+function fiche(id){
+  var u=PRF.filter(function(x){return x.id==id})[0];if(!u)return;
+  var bs=BK.filter(function(b){return b.user_id==id}),act=bs.filter(function(b){return b.status!="cancelled"});
+  var nn=act.reduce(function(s,b){return s+nights(b)},0);
+  var spent=bs.reduce(function(s,b){return s+paidOf(b.id)},0);
+  var ph=(u.phone||"").replace(/\s/g,"");
+  $("cbody").innerHTML='<div class="row" style="justify-content:flex-start;gap:12px;margin-top:0;padding-right:40px"><span class="avt" style="width:52px;height:52px;font-size:24px">'+esc((u.full_name||u.email||"?").charAt(0).toUpperCase())+'</span><div><h2 style="margin:0;font-size:28px">'+esc(u.full_name||"Sans nom")+'</h2><div class="sub">'+esc(u.email)+'</div><div class="sub">'+esc(u.phone||"Téléphone non renseigné")+' · inscrit le '+dl(u.created_at)+'</div></div></div>'+
+    '<div class="mini"><div><b>'+act.length+'</b><span>réservations</span></div><div><b>'+nn+'</b><span>nuits</span></div><div><b>'+Math.round(spent/1000)+' k</b><span>FCFA payés</span></div></div>'+
+    '<h3 style="font-size:22px;margin-bottom:4px">Historique</h3>'+
+    (bs.length?bs.map(function(b){return '<div class="row" style="border-top:1px solid var(--line);padding-top:10px"><div><b>'+esc(b.rooms?b.rooms.name:"")+'</b><div class="sub">'+ds(b.check_in)+' → '+ds(b.check_out)+' · '+fmt(tot(b))+'</div></div><span class="badge b-'+b.status+'">'+LABEL[b.status]+'</span></div>'}).join(""):'<div class="empty">Aucune réservation pour le moment.</div>')+
+    (ph?'<a class="a" href="tel:'+esc(ph)+'" style="display:block;text-align:center;text-decoration:none;margin-top:16px;padding:13px">Appeler le client</a>':'');
+  $("cov").classList.add("on");
+}
+function closeFiche(){$("cov").classList.remove("on")}
+$("cxx").onclick=closeFiche;
+$("cov").onclick=function(e){if(e.target==$("cov"))closeFiche()};
+$("cq").oninput=clients;
+
+/* ---------- Paramètres ---------- */
+var ST={pm:{}};
+function settingsUI(){
+  if(settingsUI.done)return;settingsUI.done=true;
+  $("sp").value=pct();$("sc").value=parseInt(SET.free_cancel_hours,10)||0;
+  var on=String(SET.payment_methods||"").split(",");
+  Object.keys(PMN).forEach(function(k){ST.pm[k]=on.indexOf(k)>-1});
+  pmRender();ex();
+}
+function pmRender(){
+  $("sm").innerHTML=Object.keys(PMN).map(function(k){
+    return '<div class="row" style="border-top:1px solid var(--line);padding:10px 0 2px"><span>'+PMN[k]+'</span><button class="sw'+(ST.pm[k]?' on':'')+'" data-pm="'+k+'" type="button"><i></i>'+(ST.pm[k]?'Proposé':'Masqué')+'</button></div>';
+  }).join("");
+  document.querySelectorAll("[data-pm]").forEach(function(x){x.onclick=function(){ST.pm[x.dataset.pm]=!ST.pm[x.dataset.pm];pmRender()}});
+}
+function ex(){
+  var p=+$("sp").value,t=270000,d=Math.round(t*p/100/500)*500;
+  $("sx").textContent=($("sp").value===""||isNaN(p))?"":"Exemple : séjour de "+fmt(t)+" → acompte "+fmt(d)+", reste "+fmt(t-d)+" à régler à l'hôtel.";
+}
+$("sp").oninput=ex;
+$("ss").onclick=async function(){
+  var p=+$("sp").value,c=+$("sc").value,e=$("se");
+  if($("sp").value===""||!(p>=0&&p<=100)){e.textContent="L'acompte doit être entre 0 et 100 %.";return}
+  if($("sc").value===""||!(c>=0&&c<=720)){e.textContent="Le délai doit être entre 0 et 720 heures.";return}
+  if(!Object.keys(ST.pm).some(function(k){return ST.pm[k]})){e.textContent="Gardez au moins un moyen de paiement.";return}
+  e.textContent="";$("ss").disabled=true;
+  var rows=[{key:"deposit_percent",value:String(Math.round(p))},{key:"free_cancel_hours",value:String(Math.round(c))},
+    {key:"payment_methods",value:Object.keys(PMN).filter(function(k){return ST.pm[k]}).join(",")}];
+  var r=await db.from("hotel_settings").upsert(rows,{onConflict:"key"});
+  $("ss").disabled=false;
+  if(r.error){e.textContent="Les paramètres n'ont pas pu être enregistrés. Réessayez.";return}
+  rows.forEach(function(x){SET[x.key]=x.value});
+  stats();list();toast("Paramètres enregistrés ✓");
+};
+
+/* ---------- Messages ---------- */
+function messages(){
+  $("mlist").innerHTML=MSG.length?MSG.map(function(m){
+    var c=m.contact||"",link=/@/.test(c)?'mailto:'+esc(c):'tel:'+esc(c.replace(/\s/g,""));
+    return '<article class="msgc'+(m.status=="new"?' new':'')+'"><div class="top"><div><b>'+esc(m.name)+'</b><div class="sub">'+esc(m.subject||"Sans sujet")+' · '+dl(m.created_at)+'</div></div>'+
+      '<span class="badge '+(m.status=="new"?'b-pending':'b-confirmed')+'">'+(m.status=="new"?'Non lu':'Lu')+'</span></div>'+
+      '<p>'+esc(m.body)+'</p><div class="row"><a class="a" href="'+link+'" style="text-decoration:none">Répondre : '+esc(c)+'</a>'+
+      (m.status=="new"?'<button class="a" style="background:none;color:var(--olive)" data-rd="'+m.id+'" type="button">Marquer comme lu</button>':'')+'</div></article>';
+  }).join(""):'<div class="empty">Aucun message pour le moment.</div>';
+  document.querySelectorAll("[data-rd]").forEach(function(x){x.onclick=async function(){
+    var r=await db.from("messages").update({status:"read"}).eq("id",x.dataset.rd);
+    if(r.error){toast("Le message n'a pas pu être mis à jour.");return}
+    MSG.forEach(function(m){if(m.id==x.dataset.rd)m.status="read"});stats();messages();
+  }});
+}
+
+/* ---------- Navigation ---------- */
+function view(n){
+  for(var i=1;i<=7;i++)$("v"+i).classList.toggle("on",i==n);
+  document.querySelectorAll("#menu [data-v]").forEach(function(b){b.classList.toggle("cur",b.dataset.v==n)});
+  window.scrollTo(0,0);
+}
+function menu(o){$("menu").classList.toggle("on",o);$("bg").setAttribute("aria-expanded",o?"true":"false")}
+$("bg").onclick=function(e){e.stopPropagation();menu(!$("menu").classList.contains("on"))};
+document.addEventListener("click",function(e){if(!$("menu").contains(e.target))menu(false)});
+document.addEventListener("keydown",function(e){if(e.key=="Escape"){menu(false);closeForm();closeFiche()}});
+document.querySelectorAll("[data-v]").forEach(function(b){b.onclick=function(){menu(false);view(+b.dataset.v)}});
+$("q").oninput=function(){q=this.value.trim().toLowerCase();list()};
+$("msite").onclick=function(){location.href="index.html"};
+$("logout").onclick=async function(){menu(false);if(db)await db.auth.signOut();location.href="index.html"};
+$("today").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+
+/* ---------- Démarrage ---------- */
+(async function(){
+  if(!db){gate("Le site ne peut pas se connecter à la base de données.");return}
+  var g=await db.auth.getSession();
+  me=g.data&&g.data.session?g.data.session.user:null;
+  if(!me){gate("Connectez-vous avec un compte administrateur pour accéder à cet espace.",true);return}
+  var p=await db.from("profiles").select("full_name,role").eq("id",me.id).maybeSingle();
+  if(!p.data||p.data.role!=="admin"){gate("Cet espace est réservé aux administrateurs de l'hôtel.");return}
+  myName=(p.data.full_name||"").split(" ")[0];
+  $("hello").textContent="Bonjour"+(myName?", "+myName:"");
+  $("app").style.display="block";
+  await loadAll();
+})();
+</script>
+
+</body>
+</html>
