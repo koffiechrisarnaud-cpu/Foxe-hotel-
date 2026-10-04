@@ -46,6 +46,11 @@ h2{font-size:clamp(32px,8vw,44px);margin:6px 0 18px}
 .ph{height:170px;background:linear-gradient(135deg,#8c9a5b,#4b4a24 55%,#2a2118)}
 .room:nth-child(2) .ph{background:linear-gradient(135deg,#c9a46b,#7a5a2e 55%,#2a2118)}
 .room:nth-child(3) .ph{background:linear-gradient(135deg,#5d6f78,#2f3d3a 55%,#1a1411)}
+.phw{position:relative}
+.ph.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:var(--sage)}
+.ph.slides::-webkit-scrollbar{display:none}
+.ph.slides>i{flex:0 0 100%;scroll-snap-align:center;background-size:cover;background-position:center;display:block}
+.pc{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;border-radius:99px;padding:2px 9px;pointer-events:none}
 .room .in{padding:16px}
 .room p{color:var(--muted);font-size:14px;margin:6px 0 12px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -127,6 +132,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30p
           <button type="button" data-go="services">Nos services</button>
           <button type="button" data-go="galerie">Galerie photo</button>
           <button type="button" data-go="faq">Questions fréquentes</button>
+          <a href="contact.html">Contact</a>
           <a href="connexion.html" class="sep" id="mAuth">Connexion / Inscription</a>
           <button type="button" id="mOut" style="display:none">Se déconnecter</button>
         </div>
@@ -144,7 +150,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30p
 <main class="wrap">
   <div class="stats">
     <div><b id="stN">–</b><span>types de chambres</span></div>
-    <div><b>24h/24</b><span>réception</span></div>
+    <div id="stRecBox"><b id="stRec">24h/24</b><span>réception</span></div>
     <div><b id="stC">48 h</b><span>annulation gratuite</span></div>
   </div>
 
@@ -153,27 +159,16 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30p
   <div class="rooms" id="rooms"></div>
   <p id="msg"></p>
 
-  <div class="eyebrow" id="services">Nos services</div>
-  <h2>Tout pour votre confort</h2>
-  <div class="svc">
-    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><path d="M2 9a14 14 0 0 1 20 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></i><b>Wi-Fi gratuit</b><span>Connexion rapide partout dans l'hôtel</span></div>
-    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3v2M12 3v2"/></svg></i><b>Petit-déjeuner</b><span>Servi chaque matin de 7h à 10h</span></div>
-    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M4.2 7l15.6 10M4.2 17L19.8 7"/><path d="M9.5 3.5L12 6l2.5-2.5M9.5 20.5L12 18l2.5 2.5"/></svg></i><b>Climatisation</b><span>Dans toutes les chambres</span></div>
-    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="4"/><path d="M10 17V8h3.2a2.6 2.6 0 0 1 0 5.2H10"/></svg></i><b>Parking sécurisé</b><span>Gratuit pour nos clients</span></div>
-    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18"/><path d="M5 17a7 7 0 0 1 14 0"/><path d="M12 6V4M10.5 4h3"/><path d="M3 20h18"/></svg></i><b>Room service</b><span>Vos repas servis en chambre</span></div>
-    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="13" rx="3"/><path d="M4 11h16"/><circle cx="8" cy="19.5" r="1.5"/><circle cx="16" cy="19.5" r="1.5"/></svg></i><b>Navette aéroport</b><span>Sur réservation</span></div>
-    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><circle cx="12" cy="13" r="4"/><path d="M8 6.5h.01M11 6.5h.01"/></svg></i><b>Blanchisserie</b><span>Linge lavé et repassé</span></div>
-    <div class="sv"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i><b>Réception 24h/24</b><span>Une équipe à votre écoute</span></div>
+  <div id="svcBox">
+    <div class="eyebrow" id="services">Nos services</div>
+    <h2>Tout pour votre confort</h2>
+    <div class="svc" id="svc"></div>
   </div>
 
-  <div class="eyebrow" id="horaires">Horaires</div>
-  <h2>Bien préparer votre séjour</h2>
-  <div class="hcard">
-    <div><span>Réception</span><span>24h/24</span></div>
-    <div><span>Arrivée (check-in)</span><span>à partir de 14h</span></div>
-    <div><span>Départ (check-out)</span><span>avant 12h</span></div>
-    <div><span>Petit-déjeuner</span><span>7h – 10h</span></div>
-    <div><span>Réponses WhatsApp</span><span>8h – 20h</span></div>
+  <div id="hrsBox">
+    <div class="eyebrow" id="horaires">Horaires</div>
+    <h2>Bien préparer votre séjour</h2>
+    <div class="hcard" id="hrs"></div>
   </div>
 
   <section class="band">
@@ -223,12 +218,14 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 30p
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
+<script src="icons.js"></script>
 <script>
 var C=window.FOXE||{};
 var E=function(i){return document.getElementById(i)};
 var fmt=function(n){return Number(n).toLocaleString("fr-FR")+" FCFA"};
 var DMS=864e5;
 var GR=[["#8c9a5b","#4b4a24"],["#c9a46b","#7a5a2e"],["#5d6f78","#2f3d3a"],["#a9b8a8","#4f6658"]];
+var RPH={},SVC=[],HRS=[],GAL=[];
 var ROOMS=[],SET={deposit_percent:"30",free_cancel_hours:"48"},busy=[],bcur=null,user=null;
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 
@@ -249,7 +246,15 @@ async function load(){
   ROOMS=r.data||[];
   var s=await db.from("hotel_settings").select("key,value");
   if(!s.error&&s.data)s.data.forEach(function(x){SET[x.key]=x.value});
-  render();
+  var q=await Promise.all([
+    db.from("room_photos").select("room_id,url,position").order("position").order("id"),
+    db.from("services").select("id,title,description,icon,position").eq("is_active",true).order("position").order("id"),
+    db.from("opening_hours").select("id,label,value,position").order("position").order("id"),
+    db.from("gallery_photos").select("id,url,caption,category,position").order("position").order("id")
+  ]);
+  RPH={};(q[0].data||[]).forEach(function(p){(RPH[p.room_id]=RPH[p.room_id]||[]).push(p.url)});
+  SVC=q[1].data||[];HRS=q[2].data||[];GAL=q[3].data||[];
+  render();content();
 }
 function render(){
   E("stN").textContent=ROOMS.length;
@@ -258,9 +263,15 @@ function render(){
   E("msg").textContent="";
   E("rooms").innerHTML=ROOMS.map(function(r,i){
     var g=GR[i%GR.length];
-    var ph=r.image_url
-      ?'<div class="ph" style="background:url(\''+encodeURI(r.image_url)+'\') center/cover"></div>'
-      :'<div class="ph" style="background:linear-gradient(135deg,'+g[0]+','+g[1]+' 55%,#2a2118)"></div>';
+    var imgs=(RPH[r.id]&&RPH[r.id].length)?RPH[r.id]:(r.image_url?[r.image_url]:[]);
+    var ph;
+    if(imgs.length>1){
+      ph='<div class="phw"><div class="ph slides">'+imgs.map(function(u){return '<i style="background-image:url(\''+encodeURI(u)+'\')"></i>'}).join("")+'</div><span class="pc">1/'+imgs.length+'</span></div>';
+    }else if(imgs.length==1){
+      ph='<div class="ph" style="background:url(\''+encodeURI(imgs[0])+'\') center/cover"></div>';
+    }else{
+      ph='<div class="ph" style="background:linear-gradient(135deg,'+g[0]+','+g[1]+' 55%,#2a2118)"></div>';
+    }
     return '<article class="room">'+ph+'<div class="in"><h3>'+esc(r.name)+'</h3><p>'+esc(r.description)+' · '+r.capacity+' pers. max</p>'+
       '<div class="row"><div class="price">'+fmt(r.price_per_night)+'<small>par nuit</small></div>'+
       '<button class="btn" data-rid="'+r.id+'" type="button">Réserver</button></div></div></article>';
@@ -348,44 +359,58 @@ if(db){
   E("mOut").onclick=async function(){await db.auth.signOut();menu(false)};
 }
 
-var PH=[
- {t:"Chambre Nature",k:"Chambres",c:["#8c9a5b","#4b4a24"]},
- {t:"Jardin et allées",k:"Extérieur",c:["#6f8a4c","#2f4a2a"]},
- {t:"Suite Famille",k:"Chambres",c:["#c9a46b","#7a5a2e"]},
- {t:"Terrasse privée",k:"Extérieur",c:["#7a8a5a","#3d3a22"]},
- {t:"Salle de bain",k:"Détente",c:["#a9b8a8","#4f6658"]},
- {t:"Suite Prestige",k:"Chambres",c:["#5d6f78","#2f3d3a"]},
- {t:"Coin lecture",k:"Détente",c:["#b88a5a","#5a3d24"]},
- {t:"Petit-déjeuner",k:"Détente",c:["#d1a44a","#7a4f1f"]}
-];
-var gcat="Tous",gl=[],gi=0;
-function bg(p,a){return "linear-gradient("+(a||135)+"deg,"+p.c[0]+","+p.c[1]+" 60%,#1f1710)"}
+var PH=[],gcat="Tous",gl=[],gi=0;
+function pbg(p,fit){return p.u?"url('"+encodeURI(p.u)+"') center/"+(fit||"cover")+" no-repeat":"linear-gradient(135deg,#8c9a5b,#4b4a24)"}
+function showSec(boxId,key,on){
+  var b=E(boxId);if(b)b.style.display=on?"":"none";
+  document.querySelectorAll('[data-go="'+key+'"]').forEach(function(x){x.style.display=on?"":"none"});
+}
+function content(){
+  E("svc").innerHTML=SVC.map(function(s){
+    return '<div class="sv"><i>'+(window.foxeIcon?window.foxeIcon(s.icon):"")+'</i><b>'+esc(s.title)+'</b><span>'+esc(s.description)+'</span></div>';
+  }).join("");
+  showSec("svcBox","services",SVC.length>0);
+  E("hrs").innerHTML=HRS.map(function(h){return '<div><span>'+esc(h.label)+'</span><span>'+esc(h.value)+'</span></div>'}).join("");
+  showSec("hrsBox","horaires",HRS.length>0);
+  var rec=HRS.filter(function(h){return /r[ée]ception/i.test(h.label)})[0];
+  E("stRec").textContent=rec?rec.value:"";E("stRecBox").style.display=rec?"":"none";
+  PH=GAL.map(function(g){return {u:g.url,t:g.caption||g.category,k:g.category}});
+  gallery();showSec("galerie","galerie",PH.length>0);
+}
 function gallery(){
-  var cats=["Tous","Chambres","Extérieur","Détente"];
-  document.getElementById("gchips").innerHTML=cats.map(function(c){return '<button class="gch'+(c==gcat?' on':'')+'" data-c="'+c+'" type="button">'+c+'</button>'}).join("");
+  var cats=["Tous"];PH.forEach(function(p){if(cats.indexOf(p.k)<0)cats.push(p.k)});
+  if(cats.indexOf(gcat)<0)gcat="Tous";
+  E("gchips").innerHTML=cats.length>2?cats.map(function(c){return '<button class="gch'+(c==gcat?' on':'')+'" data-c="'+esc(c)+'" type="button">'+esc(c)+'</button>'}).join(""):"";
   gl=PH.filter(function(p){return gcat=="Tous"||p.k==gcat});
-  document.getElementById("gg").innerHTML=gl.map(function(p,i){
-    return '<button class="gt'+(gcat=="Tous"&&(i==0||i==5)?' tall':'')+'" data-i="'+i+'" type="button" style="background:'+bg(p,120+i*20)+'">'+p.t+'</button>';
+  E("gg").innerHTML=gl.map(function(p,i){
+    return '<button class="gt'+(gcat=="Tous"&&gl.length>6&&(i==0||i==5)?' tall':'')+'" data-i="'+i+'" type="button" aria-label="'+esc(p.t)+'" style="background:'+pbg(p)+'"></button>';
   }).join("");
   document.querySelectorAll(".gch").forEach(function(b){b.onclick=function(){gcat=b.dataset.c;gallery()}});
   document.querySelectorAll(".gt").forEach(function(b){b.onclick=function(){show(+b.dataset.i)}});
 }
 function show(i){
+  if(!gl.length)return;
   gi=(i+gl.length)%gl.length;
-  document.getElementById("lv").style.background=bg(gl[gi],150);
-  document.getElementById("lt").textContent=gl[gi].t+" · "+(gi+1)+"/"+gl.length;
-  document.getElementById("lb").classList.add("on");
+  E("lv").style.background=pbg(gl[gi],"contain");E("lv").style.backgroundColor="#000";
+  E("lt").textContent=gl[gi].t+" · "+(gi+1)+"/"+gl.length;
+  E("lb").classList.add("on");
 }
-function closeLb(){document.getElementById("lb").classList.remove("on")}
-document.getElementById("lx").onclick=closeLb;
-document.getElementById("lp").onclick=function(){show(gi-1)};
-document.getElementById("ln").onclick=function(){show(gi+1)};
-document.getElementById("lb").onclick=function(e){if(e.target==this)closeLb()};
+function closeLb(){E("lb").classList.remove("on")}
+E("lx").onclick=closeLb;
+E("lp").onclick=function(){show(gi-1)};
+E("ln").onclick=function(){show(gi+1)};
+E("lb").onclick=function(e){if(e.target==this)closeLb()};
 document.addEventListener("keydown",function(e){
-  if(!document.getElementById("lb").classList.contains("on"))return;
+  if(!E("lb").classList.contains("on"))return;
   if(e.key=="Escape")closeLb();if(e.key=="ArrowLeft")show(gi-1);if(e.key=="ArrowRight")show(gi+1);
 });
-gallery();
+document.addEventListener("scroll",function(e){
+  var t=e.target;
+  if(t&&t.classList&&t.classList.contains("slides")){
+    var i=Math.round(t.scrollLeft/(t.clientWidth||1)),pc=t.parentNode.querySelector(".pc");
+    if(pc)pc.textContent=(i+1)+"/"+t.children.length;
+  }
+},true);
 function menu(o){
   document.getElementById("menu").classList.toggle("on",o);
   document.getElementById("bg").setAttribute("aria-expanded",o?"true":"false");
