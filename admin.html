@@ -92,6 +92,22 @@ h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-hei
 .msgc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px}
 .msgc.new{border-color:var(--gold)}
 .msgc p{font-size:14px;margin:8px 0;white-space:pre-wrap;word-break:break-word}
+.rphotos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
+.rp{position:relative;aspect-ratio:1;border-radius:12px;background-size:cover;background-position:center;border:1px solid var(--line)}
+.rp .rpm{position:absolute;left:4px;bottom:4px;background:var(--olive);color:#fff;font-size:10px;border-radius:99px;padding:2px 7px}
+.rp .rpa{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;border-radius:99px;padding:3px 8px;border:0;cursor:pointer}
+.rp .rpx{position:absolute;right:4px;top:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;cursor:pointer}
+.gadm{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.gi{position:relative;aspect-ratio:4/3;border-radius:14px;background-size:cover;background-position:center;border:1px solid var(--line);overflow:hidden}
+.gi span{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;font-size:11px;padding:14px 8px 6px}
+.gi button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;cursor:pointer}
+.icg{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:6px}
+.icg button{aspect-ratio:1;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.icg button.on{border-color:var(--olive);color:var(--olive)}
+.ctr{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.ctr .ib{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--olive),var(--gold));color:#fff;display:grid;place-items:center;flex:none}
+.mv{display:flex;flex-direction:column;gap:4px}
+.mv button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 .link{border:0;background:none;color:var(--olive);font:500 13px "DM Sans",system-ui,sans-serif;cursor:pointer;margin-top:8px}
 #toast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:99px;font-size:14px;z-index:40;max-width:90%;text-align:center}
 </style>
@@ -115,6 +131,7 @@ h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-hei
         <button type="button" data-v="1" class="cur">Tableau de bord</button>
         <button type="button" data-v="2">Réservations <em id="mp"></em></button>
         <button type="button" data-v="3">Gestion des chambres</button>
+        <button type="button" data-v="8">Contenu du site</button>
         <button type="button" data-v="5">Clients inscrits</button>
         <button type="button" data-v="7">Messages <em id="mm"></em></button>
         <button type="button" data-v="4">Équipe</button>
@@ -215,6 +232,17 @@ h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-hei
     <div id="mlist"></div>
   </section>
 
+  <section class="v" id="v8">
+    <div class="hi"><h1>Contenu du site</h1><p>Modifiez ce que les visiteurs voient sur le site.</p></div>
+    <div class="chips" id="cmsTabs"></div>
+    <div id="cmsBody"></div>
+  </section>
+
+  <div class="ov" id="cmsov"><div class="sheet">
+    <button class="x" id="cmsx" type="button" aria-label="Fermer">✕</button>
+    <div id="cmsform"></div>
+  </div></div>
+
   <div class="ov" id="cov"><div class="sheet">
     <button class="x" id="cxx" type="button" aria-label="Fermer">✕</button>
     <div id="cbody"></div>
@@ -229,8 +257,9 @@ h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-hei
       <div><label for="fp">Prix par nuit (FCFA)</label><input class="inp" id="fp" type="number" inputmode="numeric" min="0" step="500"></div>
       <div><label for="fc">Capacité (personnes)</label><input class="inp" id="fc" type="number" inputmode="numeric" min="1" max="10"></div>
     </div>
-    <label for="fph">Photo de la chambre</label>
-    <input class="inp" id="fph" type="file" accept="image/*">
+    <label>Photos de la chambre (jusqu'à 6)</label>
+    <div class="rphotos" id="rph"></div>
+    <input class="inp" id="fph" type="file" accept="image/*" multiple>
     <div class="sub" id="fpn" style="margin-top:6px"></div>
     <div class="err" id="fe"></div>
     <button class="save" id="fs" type="button">Enregistrer</button>
@@ -240,6 +269,8 @@ h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-hei
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
+<script src="icons.js"></script>
+<script src="admin-content.js"></script>
 <script>
 var C=window.FOXE||{};
 var $=function(i){return document.getElementById(i)};
@@ -393,38 +424,29 @@ function form(id){
   var r=id?ROOMS.filter(function(x){return x.id==id})[0]:{name:"",description:"",price_per_night:"",capacity:2};
   $("ft").textContent=id?"Modifier la chambre":"Nouvelle chambre";
   $("fn").value=r.name;$("fd").value=r.description||"";$("fp").value=r.price_per_night;$("fc").value=r.capacity;
-  $("fph").value="";$("fpn").textContent=r.image_url?"Une photo est déjà enregistrée. Choisissez-en une autre pour la remplacer.":"";
+  $("fph").value="";$("fpn").textContent="";
   $("fe").textContent="";$("ov").classList.add("on");
+  if(window.rpRender)rpRender(id);
 }
 function closeForm(){$("ov").classList.remove("on")}
 $("addr").onclick=function(){form(0)};
 $("cx").onclick=closeForm;
 $("ov").onclick=function(e){if(e.target==$("ov"))closeForm()};
 $("fs").onclick=async function(){
-  var n=$("fn").value.trim(),d=$("fd").value.trim(),p=+$("fp").value,c=+$("fc").value,e=$("fe"),f=$("fph").files[0];
+  var n=$("fn").value.trim(),d=$("fd").value.trim(),p=+$("fp").value,c=+$("fc").value,e=$("fe");
   if(n.length<3){e.textContent="Entrez un nom (3 caractères minimum).";return}
   if(!(p>0)){e.textContent="Entrez un prix par nuit supérieur à 0.";return}
   if(!(c>=1&&c<=10)||c%1){e.textContent="La capacité doit être entre 1 et 10 personnes.";return}
   if(ROOMS.some(function(x){return x.name.toLowerCase()==n.toLowerCase()&&x.id!=editId})){e.textContent="Une chambre porte déjà ce nom.";return}
-  if(f){
-    if(!/^image\//.test(f.type)){e.textContent="Le fichier choisi n'est pas une image.";return}
-    if(f.size>4*1024*1024){e.textContent="La photo est trop lourde (4 Mo maximum).";return}
-  }
   e.textContent="";var btn=$("fs");btn.disabled=true;btn.textContent="Enregistrement…";
   var row={name:n,description:d,price_per_night:p,capacity:c};
-  if(f){
-    var ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"jpg";
-    var path="rooms/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
-    var up=await db.storage.from("room-photos").upload(path,f,{contentType:f.type,cacheControl:"3600"});
-    if(up.error){btn.disabled=false;btn.textContent="Enregistrer";e.textContent="La photo n'a pas pu être envoyée. Réessayez.";return}
-    row.image_url=db.storage.from("room-photos").getPublicUrl(path).data.publicUrl;
-  }
-  var res=editId?await db.from("rooms").update(row).eq("id",editId):await db.from("rooms").insert(row);
+  var res=editId?await db.from("rooms").update(row).eq("id",editId):await db.from("rooms").insert(row).select("id").single();
   btn.disabled=false;btn.textContent="Enregistrer";
   if(res.error){e.textContent="L'enregistrement n'a pas pu se faire. Réessayez.";return}
-  closeForm();
   var rr=await db.from("rooms").select("*").order("id");ROOMS=rr.data||ROOMS;
-  stats();roomsUI();toast(editId?"Chambre modifiée.":"Chambre ajoutée.");
+  stats();roomsUI();
+  if(editId){closeForm();toast("Chambre modifiée.");}
+  else{toast("Chambre ajoutée. Vous pouvez maintenant ajouter ses photos.");form(res.data.id);}
 };
 
 /* ---------- Équipe ---------- */
@@ -544,7 +566,7 @@ function messages(){
 
 /* ---------- Navigation ---------- */
 function view(n){
-  for(var i=1;i<=7;i++)$("v"+i).classList.toggle("on",i==n);
+  for(var i=1;i<=8;i++)$("v"+i).classList.toggle("on",i==n);
   document.querySelectorAll("#menu [data-v]").forEach(function(b){b.classList.toggle("cur",b.dataset.v==n)});
   window.scrollTo(0,0);
 }
@@ -570,6 +592,7 @@ $("today").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day
   $("hello").textContent="Bonjour"+(myName?", "+myName:"");
   $("app").style.display="block";
   await loadAll();
+  if(window.cmsLoad)cmsLoad();
 })();
 </script>
 
