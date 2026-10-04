@@ -1,7 +1,7 @@
 /* admin-content.js : contenu du site géré par l'administrateur.
    Chargé par admin.html. Utilise les fonctions de admin.html ($, db, toast, esc, ROOMS...). */
 
-var CMS = { tab: "svc", SVC: [], HRS: [], GAL: [], RPH: [], wired: false, sheet: null };
+var CMS = { tab: "svc", SVC: [], HRS: [], GAL: [], RPH: [], REV: [], avTab: "all", wired: false, sheet: null };
 var ICON_KEYS = ["wifi","breakfast","ac","parking","restaurant","shuttle","laundry","clock","pool","gym","spa","tv","safe","bell","car","bed","sun","star"];
 var CATS = ["Chambres", "Extérieur", "Détente"];
 var CONTACT_FIELDS = [
@@ -59,12 +59,15 @@ async function cmsLoad() {
     db.from("services").select("*").order("position").order("id"),
     db.from("opening_hours").select("*").order("position").order("id"),
     db.from("gallery_photos").select("*").order("position").order("id"),
-    db.from("room_photos").select("*").order("position").order("id")
+    db.from("room_photos").select("*").order("position").order("id"),
+    db.from("reviews").select("id,rating,comment,author_name,is_published,created_at,rooms(name)").order("created_at", { ascending: false })
   ]);
-  CMS.SVC = r[0].data || []; CMS.HRS = r[1].data || []; CMS.GAL = r[2].data || []; CMS.RPH = r[3].data || [];
-  if (r.some(function (x) { return x.error; })) toast("Le contenu du site n'a pas pu être entièrement chargé. Avez-vous lancé le script de l'étape 5 ?");
+  CMS.SVC = r[0].data || []; CMS.HRS = r[1].data || []; CMS.GAL = r[2].data || []; CMS.RPH = r[3].data || []; CMS.REV = r[4].data || [];
+  if (r.slice(0, 4).some(function (x) { return x.error; })) toast("Le contenu du site n'a pas pu être entièrement chargé. Avez-vous lancé le script de l'étape 5 ?");
+  if (r[4].error) toast("Les avis n'ont pas pu être chargés. Avez-vous lancé le script de l'étape 6 ?");
   cmsWire();
   cmsRender();
+  avRender();
 }
 function cmsWire() {
   if (CMS.wired) return; CMS.wired = true;
@@ -83,7 +86,8 @@ function rpRender(roomId) {
   if (!roomId) { box.innerHTML = '<div class="sub" style="grid-column:1/-1">Enregistrez d\'abord la chambre, puis ajoutez ses photos.</div>'; inp.disabled = true; G("fpn").textContent = ""; return; }
   var ph = rpList(roomId);
   box.innerHTML = ph.map(function (p, i) {
-    return '<div class="rp" style="background-image:url(\'' + encodeURI(p.url) + '\')">' +
+    return '<div class="rp" style="background-image:url(\'' + encodeURI(p.url) + '\');background-position:' + (p.focus_x == null ? 50 : p.focus_x) + '% ' + (p.focus_y == null ? 50 : p.focus_y) + '%">' +
+      '<button class="rpj" data-rpj="' + p.id + '" type="button">Ajuster</button>' +
       (i == 0 ? '<span class="rpm">Principale</span>' : '<button class="rpa" data-rpm="' + p.id + '" type="button">Principale</button>') +
       '<button class="rpx" data-rpd="' + p.id + '" type="button" aria-label="Supprimer la photo">✕</button></div>';
   }).join("");
@@ -91,6 +95,7 @@ function rpRender(roomId) {
   inp.disabled = ph.length >= 6;
   box.querySelectorAll("[data-rpd]").forEach(function (b) { b.onclick = function () { rpDelete(+b.dataset.rpd, roomId); }; });
   box.querySelectorAll("[data-rpm]").forEach(function (b) { b.onclick = function () { rpMain(+b.dataset.rpm, roomId); }; });
+  box.querySelectorAll("[data-rpj]").forEach(function (b) { b.onclick = function () { rpAdjust(+b.dataset.rpj); }; });
 }
 async function rpSync(roomId) {
   var ph = rpList(roomId), url = ph.length ? ph[0].url : null;
@@ -116,6 +121,7 @@ async function rpAdd(files) {
   G("fph").value = "";
   await rpSync(roomId); rpRender(roomId);
   if (done) toast(done + " photo" + (done > 1 ? "s ajoutées" : " ajoutée") + " ✓");
+  if (done == 1 && arr.length == 1) { var last = rpList(roomId).pop(); if (last) rpAdjust(last.id); }
 }
 async function rpDelete(id, roomId) {
   if (!window.confirm("Supprimer cette photo ?")) return;
@@ -153,13 +159,13 @@ async function cmsMove(table, arr, id, dir) {
   arr.forEach(function (x, k) { if (x.position !== k + 1) { x.position = k + 1; jobs.push(db.from(table).update({ position: k + 1 }).eq("id", x.id)); } });
   await Promise.all(jobs); cmsRender();
 }
-async function cmsDelete(table, arr, id, msg, after) {
+async function cmsDelete(table, arr, id, msg, after, render) {
   if (!window.confirm(msg)) return;
   var r = await db.from(table).delete().eq("id", id);
   if (r.error) { toast("La suppression n'a pas pu se faire."); return; }
   var k = arr.findIndex(function (x) { return x.id == id; });
   if (k >= 0) { if (after) after(arr[k]); arr.splice(k, 1); }
-  cmsRender(); toast("Supprimé ✓");
+  (render || cmsRender)(); toast("Supprimé ✓");
 }
 function wireMoves(table, arr) {
   G("cmsBody").querySelectorAll("[data-mv]").forEach(function (b) { b.onclick = function () { cmsMove(table, arr, +b.dataset.mv, +b.dataset.d); }; });
@@ -300,4 +306,64 @@ function cmsContact() {
     rows.forEach(function (x) { SET[x.key] = x.value; });
     toast("Coordonnées enregistrées ✓");
   };
+}
+
+/* ---------- Réglage de l'affichage d'une photo de chambre ---------- */
+function rpAdjust(id) {
+  var p = CMS.RPH.filter(function (x) { return x.id == id; })[0]; if (!p) return;
+  var x = p.focus_x == null ? 50 : p.focus_x, y = p.focus_y == null ? 50 : p.focus_y, z = p.zoom || 100;
+  openSheet('<h2 style="font-size:28px;margin-bottom:4px">Ajuster la photo</h2>' +
+    '<p class="sub">Voici ce que le client verra sur l\'accueil. Déplacez les curseurs pour cadrer la photo.</p>' +
+    '<div class="adjbox"><b id="adjb" style="background-image:url(\'' + encodeURI(p.url) + '\')"></b></div>' +
+    '<label for="adx">Position horizontale</label><input class="inp" id="adx" type="range" min="0" max="100" value="' + x + '">' +
+    '<label for="ady">Position verticale</label><input class="inp" id="ady" type="range" min="0" max="100" value="' + y + '">' +
+    '<label for="adz">Zoom</label><input class="inp" id="adz" type="range" min="100" max="250" value="' + z + '">' +
+    '<div class="err" id="cfe"></div>' +
+    '<button class="save" id="adsv" type="button">Enregistrer</button>' +
+    '<button class="save" id="adrs" type="button" style="background:none;color:var(--olive);border:1.5px solid var(--olive);margin-top:8px">Réinitialiser</button>');
+  function paint() {
+    var xx = +G("adx").value, yy = +G("ady").value, zz = +G("adz").value / 100, b = G("adjb");
+    b.style.backgroundPosition = xx + "% " + yy + "%";
+    b.style.transformOrigin = xx + "% " + yy + "%";
+    b.style.transform = "scale(" + zz + ")";
+  }
+  ["adx", "ady", "adz"].forEach(function (k) { G(k).oninput = paint; });
+  paint();
+  G("adrs").onclick = function () { G("adx").value = 50; G("ady").value = 50; G("adz").value = 100; paint(); };
+  G("adsv").onclick = async function () {
+    var row = { focus_x: +G("adx").value, focus_y: +G("ady").value, zoom: +G("adz").value };
+    G("adsv").disabled = true;
+    var r = await db.from("room_photos").update(row).eq("id", id);
+    G("adsv").disabled = false;
+    if (r.error) { G("cfe").textContent = "Le réglage n'a pas pu être enregistré. Avez-vous lancé le script de l'étape 6 ?"; return; }
+    p.focus_x = row.focus_x; p.focus_y = row.focus_y; p.zoom = row.zoom;
+    closeSheet(); if (editId) rpRender(editId); toast("Réglage enregistré ✓");
+  };
+}
+
+/* ---------- Avis des clients ---------- */
+function starsTxt(n) { var s = ""; for (var i = 1; i <= 5; i++) s += i <= n ? "★" : "☆"; return s; }
+function avRender() {
+  var pend = CMS.REV.filter(function (r) { return !r.is_published; }).length;
+  G("mav").textContent = pend ? pend + " à valider" : "";
+  var T = [["all", "Tous (" + CMS.REV.length + ")"], ["pending", "À valider (" + pend + ")"], ["pub", "Affichés (" + (CMS.REV.length - pend) + ")"]];
+  G("avTabs").innerHTML = T.map(function (t) { return '<button class="chip' + (CMS.avTab == t[0] ? ' on' : '') + '" data-at="' + t[0] + '" type="button">' + t[1] + '</button>'; }).join("");
+  G("avTabs").querySelectorAll("[data-at]").forEach(function (b) { b.onclick = function () { CMS.avTab = b.dataset.at; avRender(); }; });
+  var items = CMS.REV.filter(function (r) { return CMS.avTab == "all" || (CMS.avTab == "pub" ? r.is_published : !r.is_published); });
+  G("avList").innerHTML = items.length ? items.map(function (r) {
+    return '<article class="bk"><div class="top"><div><div class="stars">' + starsTxt(r.rating) + '</div><b>' + esc(r.author_name || "Client") + '</b><div class="sub">' + esc(r.rooms ? r.rooms.name : "") + ' · ' + dl(r.created_at) + '</div></div>' +
+      '<span class="badge ' + (r.is_published ? 'b-confirmed' : 'b-pending') + '">' + (r.is_published ? 'Affiché' : 'À valider') + '</span></div>' +
+      '<p style="font-size:14px;margin:10px 0;word-break:break-word">' + (r.comment ? esc(r.comment) : '<span class="sub">Pas de commentaire, seulement la note.</span>') + '</p>' +
+      '<div class="row" style="justify-content:flex-start;gap:8px"><button class="a" data-ap="' + r.id + '" type="button" style="' + (r.is_published ? 'background:none;color:var(--olive)' : '') + '">' + (r.is_published ? "Retirer de l'accueil" : "Afficher sur l'accueil") + '</button>' +
+      '<button class="a o" data-ad="' + r.id + '" type="button">Supprimer</button></div></article>';
+  }).join("") : '<div class="empty">Aucun avis ici pour le moment.</div>';
+  G("avList").querySelectorAll("[data-ap]").forEach(function (b) { b.onclick = function () { avToggle(+b.dataset.ap); }; });
+  G("avList").querySelectorAll("[data-ad]").forEach(function (b) { b.onclick = function () { cmsDelete("reviews", CMS.REV, +b.dataset.ad, "Supprimer définitivement cet avis ?", null, avRender); }; });
+}
+async function avToggle(id) {
+  var r = CMS.REV.filter(function (x) { return x.id == id; })[0]; if (!r) return;
+  var nv = !r.is_published;
+  var res = await db.from("reviews").update({ is_published: nv }).eq("id", id);
+  if (res.error) { toast("Le changement n'a pas pu être enregistré."); return; }
+  r.is_published = nv; avRender(); toast(nv ? "Avis affiché sur l'accueil ✓" : "Avis retiré de l'accueil.");
 }
