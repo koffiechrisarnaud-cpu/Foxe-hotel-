@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google" content="notranslate">
+<title>Foxe Hôtel – Contact</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f5f1ea;--card:#fffdf9;--ink:#2a2118;--muted:#6f655a;--olive:#4b4a24;--gold:#c08a3e;--sage:#e1e4cf;--line:#e2dccf;--err:#b3412f;--ok:#3f6b3a;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#17120d;--card:#221b14;--ink:#f1eadf;--muted:#b3a899;--olive:#8a8847;--sage:#2a2c1d;--line:#352c22;--err:#e07a66;--ok:#8fc287}
+}
+:root[data-theme="dark"]{--bg:#17120d;--card:#221b14;--ink:#f1eadf;--muted:#b3a899;--olive:#8a8847;--sage:#2a2c1d;--line:#352c22;--err:#e07a66;--ok:#8fc287}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;line-height:1.55;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-height:1.1}
+.wrap{max-width:640px;margin:0 auto;padding:0 14px 40px}
+.bar{display:flex;justify-content:space-between;align-items:center;padding:14px 2px}
+.logo{font:600 24px "Cormorant Garamond",Georgia,serif}
+.back{font-size:14px;color:var(--muted);text-decoration:none}
+.top{border-radius:26px;color:#fff;padding:24px 22px 28px;
+  background:linear-gradient(180deg,rgba(20,14,8,.1),rgba(20,14,8,.65)),radial-gradient(circle at 75% 15%,#7a8a4a 0,#3d4a26 45%,#1f1710 100%)}
+.top h1{font-size:clamp(38px,11vw,54px)}.top p{opacity:.88;margin-top:8px;font-size:14px;max-width:34ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin-top:12px}
+.card h2{font-size:26px;margin-bottom:10px}
+.wa{display:flex;align-items:center;justify-content:center;gap:8px;background:#25a15a;color:#fff;border-radius:99px;padding:14px;font:600 16px "DM Sans",system-ui,sans-serif;text-decoration:none;margin-top:12px}
+.item{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);color:inherit;text-decoration:none}
+.item:first-of-type{border-top:0}
+.ic{width:38px;height:38px;border-radius:50%;background:var(--sage);display:grid;place-items:center;flex:none;font-size:16px}
+.item b{display:block;font-size:15px}.item span{color:var(--muted);font-size:13px}
+.hrs{width:100%;font-size:14px;border-collapse:collapse}
+.hrs td{padding:8px 0;border-top:1px solid var(--line)}.hrs tr:first-child td{border-top:0}.hrs td:last-child{text-align:right;color:var(--muted)}
+.map{height:170px;border-radius:16px;background:
+  linear-gradient(var(--line) 1px,transparent 1px) 0 0/34px 34px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/34px 34px,var(--sage);
+  display:grid;place-items:center;position:relative;overflow:hidden}
+.pin{font-size:34px;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25))}
+.btn{display:block;text-align:center;width:100%;background:var(--olive);color:#fff;border:0;border-radius:99px;padding:14px;font:500 15px "DM Sans",system-ui,sans-serif;cursor:pointer;text-decoration:none;margin-top:12px}
+label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px}
+input,select,textarea{width:100%;padding:13px;border-radius:13px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:16px "DM Sans",system-ui,sans-serif}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--olive);outline-offset:1px}
+.err{color:var(--err);font-size:12px;min-height:16px;margin-top:3px}
+#note{display:none;margin-top:12px;padding:12px;border-radius:14px;background:var(--bg);border:1px dashed var(--ok);color:var(--ok);font-size:13px}
+.soc{display:flex;gap:12px}
+.soc a{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--olive);background:var(--bg);text-decoration:none}
+.small{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar"><span class="logo">Foxe Hôtel</span><a class="back" href="index.html">← Accueil</a></div>
+
+  <header class="top">
+    <h1>Contactez-nous</h1>
+    <p>Une question avant de réserver ? Notre équipe vous répond rapidement.</p>
+  </header>
+
+  <section class="card" id="cJoin">
+    <h2>Nous joindre</h2>
+    <a class="wa" id="cWa" href="#" target="_blank" rel="noopener" style="display:none">Écrire sur WhatsApp</a>
+    <div style="margin-top:6px">
+      <a class="item" id="cTel" href="#" style="display:none"><div class="ic">📞</div><div><b id="cTelT"></b><span>Appel direct</span></div></a>
+      <a class="item" id="cMail" href="#" style="display:none"><div class="ic">✉️</div><div><b id="cMailT"></b><span>Réponse sous 24 h</span></div></a>
+      <div class="item" id="cAddr" style="display:none"><div class="ic">📍</div><div><b id="cAddrT"></b><span>Adresse de l'hôtel</span></div></div>
+    </div>
+  </section>
+
+  <section class="card" id="cMap" style="display:none">
+    <h2>Nous trouver</h2>
+    <div class="map"><div class="pin">📍</div></div>
+    <a class="btn" id="cMapBtn" href="#" target="_blank" rel="noopener">Obtenir l'itinéraire</a>
+  </section>
+
+  <section class="card">
+    <h2>Envoyez-nous un message</h2>
+    <form id="f" novalidate>
+      <label for="n">Nom</label><input id="n" autocomplete="name" placeholder="Prénom Nom" maxlength="100"><div class="err"></div>
+      <label for="c">E-mail ou téléphone</label><input id="c" autocomplete="email" placeholder="Pour vous répondre" maxlength="150"><div class="err"></div>
+      <label for="s">Sujet</label>
+      <select id="s"><option>Question sur une chambre</option><option>Ma réservation</option><option>Événement ou groupe</option><option>Autre</option></select>
+      <label for="m">Message</label><textarea id="m" placeholder="Écrivez votre message ici" maxlength="2000"></textarea><div class="err"></div>
+      <input id="w" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
+      <button class="btn" id="sb" type="submit" style="width:100%">Envoyer le message</button>
+    </form>
+    <div id="note"></div>
+  </section>
+
+  <section class="card" id="cSoc" style="display:none">
+    <h2>Suivez-nous</h2>
+    <div class="soc" id="soc"></div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+var C=window.FOXE||{};
+var $=function(i){return document.getElementById(i)};
+var db=window.supabase&&C.SUPABASE_URL?window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_KEY):null;
+var SET={};
+var SOC={
+  social_facebook:['Facebook','<path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.6-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8v3h2.7V21h2.8z"/>'],
+  social_instagram:['Instagram','<rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1"/>'],
+  social_tiktok:['TikTok','<path d="M16.5 3h-2.8v11.4a2.4 2.4 0 1 1-2.4-2.4c.3 0 .5 0 .7.1V9.2a5.2 5.2 0 1 0 4.5 5.1V8.7c1 .8 2.2 1.2 3.5 1.2V7.1c-1.8 0-3.5-1.5-3.5-4.1z"/>']
+};
+function safeUrl(u){u=String(u||"").trim();return /^https?:\/\//i.test(u)?u:""}
+
+function fill(){
+  var wa=String(SET.contact_whatsapp||"").replace(/\D/g,"");
+  if(wa.length>=8){$("cWa").href="https://wa.me/"+wa;$("cWa").style.display="flex"}
+  var ph=String(SET.contact_phone||"").trim(),phd=ph.replace(/[^\d+]/g,"");
+  if(phd.length>=8){$("cTel").href="tel:"+phd;$("cTelT").textContent=ph;$("cTel").style.display="flex"}
+  var em=String(SET.contact_email||"").trim();
+  if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){$("cMail").href="mailto:"+em;$("cMailT").textContent=em;$("cMail").style.display="flex"}
+  var ad=String(SET.contact_address||"").trim();
+  if(ad){$("cAddrT").textContent=ad;$("cAddr").style.display="flex"}
+  var mp=safeUrl(SET.contact_maps_url);
+  if(!mp&&ad)mp="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(ad);
+  if(mp){$("cMapBtn").href=mp;$("cMap").style.display="block"}
+  var soc="";
+  Object.keys(SOC).forEach(function(k){
+    var u=safeUrl(SET[k]);
+    if(u)soc+='<a href="'+u.replace(/"/g,"%22")+'" target="_blank" rel="noopener" aria-label="'+SOC[k][0]+'"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">'+SOC[k][1]+'</svg></a>';
+  });
+  if(soc){$("soc").innerHTML=soc;$("cSoc").style.display="block"}
+}
+(async function(){
+  if(!db)return;
+  var r=await db.from("hotel_settings").select("key,value");
+  if(!r.error&&r.data)r.data.forEach(function(x){SET[x.key]=x.value});
+  fill();
+})();
+
+function bad(id,m){$(id).nextElementSibling.textContent=m||"";return !m}
+function show(t,ok){var n=$("note");n.textContent=t;n.style.display="block";n.style.color=ok?"var(--ok)":"var(--err)";n.style.borderColor=ok?"var(--ok)":"var(--err)"}
+$("f").onsubmit=async function(e){
+  e.preventDefault();
+  var c=$("c").value.trim(),isMail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c),isTel=c.replace(/\D/g,"").length>=8&&!/[a-z@]/i.test(c);
+  var ok=[
+    bad("n",$("n").value.trim().length>=2?"":"Entrez votre nom."),
+    bad("c",(isMail||isTel)&&c.length>=5?"":"Entrez un e-mail ou un numéro valide."),
+    bad("m",$("m").value.trim().length>=10?"":"Votre message est un peu court (10 caractères minimum).")
+  ];
+  if(!ok.every(Boolean))return;
+  if($("w").value){ $("f").reset();show("Message envoyé. Merci !",true);return }   // piège anti-robots
+  var last=0;try{last=+localStorage.getItem("foxe_msg_t")||0}catch(x){}
+  if(Date.now()-last<60000){show("Merci de patienter une minute avant d'envoyer un autre message.",false);return}
+  if(!db){show("Le message n'a pas pu être envoyé pour le moment.",false);return}
+  var b=$("sb");b.disabled=true;b.textContent="Envoi…";
+  var r=await db.from("messages").insert({name:$("n").value.trim(),contact:c,subject:$("s").value,body:$("m").value.trim()});
+  b.disabled=false;b.textContent="Envoyer le message";
+  if(r.error){show("Le message n'a pas pu être envoyé. Réessayez dans un instant ou contactez-nous par WhatsApp.",false);return}
+  try{localStorage.setItem("foxe_msg_t",String(Date.now()))}catch(x){}
+  $("f").reset();
+  show("Message envoyé. Nous vous répondons rapidement.",true);
+};
+</script>
+</body>
+</html>
