@@ -30,6 +30,10 @@ input{width:100%;padding:13px;border-radius:13px;border:1px solid var(--line);ba
 input:focus{outline:2px solid var(--olive);outline-offset:1px}
 .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--muted);padding:9px;cursor:pointer;display:flex;line-height:0}
 .err{color:var(--err);font-size:12px;min-height:16px;margin-top:3px}
+.gbtn{display:none;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border-radius:99px;background:#fff;color:#2a2118;border:1px solid #d9d2c3;font:500 15px "DM Sans",system-ui,sans-serif;cursor:pointer}
+.gbtn:disabled{opacity:.6}
+.or{display:none;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:16px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 .btn{width:100%;background:var(--olive);color:#fff;border:0;border-radius:99px;padding:14px;font:500 16px "DM Sans",system-ui,sans-serif;cursor:pointer;margin-top:6px}
 .btn:disabled{opacity:.55}
 .btn.o{background:none;color:var(--olive);border:1.5px solid var(--olive)}
@@ -48,6 +52,11 @@ input:focus{outline:2px solid var(--olive);outline-offset:1px}
 <main class="box"><div class="card">
 
   <div id="vAuth">
+    <button class="gbtn" id="gg" type="button">
+      <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+      Continuer avec Google
+    </button>
+    <div class="or" id="orl">ou avec votre e-mail</div>
     <div class="tabs"><button id="t1" class="on" type="button">Connexion</button><button id="t2" type="button">Inscription</button></div>
 
     <form id="login" class="f on" novalidate>
@@ -124,6 +133,12 @@ function frErr(e){
 }
 
 $("t1").onclick=function(){tab(1)};$("t2").onclick=function(){tab(2)};
+if(C.ENABLE_GOOGLE){$("gg").style.display="flex";$("orl").style.display="flex"}
+$("gg").onclick=async function(){
+  var b=$("gg");b.disabled=true;
+  var r=await db.auth.signInWithOAuth({provider:"google",options:{redirectTo:C.SITE_URL+"connexion.html"}});
+  if(r.error){b.disabled=false;show("La connexion avec Google n'est pas disponible pour le moment. Utilisez votre e-mail.",false)}
+};
 document.querySelectorAll(".eye").forEach(function(b){
   b.innerHTML=EYE;b.setAttribute("aria-label","Afficher le mot de passe");
   b.onclick=function(){
