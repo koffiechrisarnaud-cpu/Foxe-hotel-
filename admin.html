@@ -165,7 +165,7 @@ input[type=range]{padding:0;height:34px}
           <circle id="ring" cx="50" cy="50" r="40" fill="none" stroke="var(--olive)" stroke-width="12" stroke-linecap="round" stroke-dasharray="0 251.3" transform="rotate(-90 50 50)"/>
           <text id="pct" x="50" y="56" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)" font-family="DM Sans,system-ui,sans-serif">0%</text>
         </svg>
-        <div><b id="rev" style="font:600 26px 'Cormorant Garamond',Georgia,serif"></b><p>d'acomptes encaissés ce mois-ci</p></div>
+        <div><b id="rev" style="font:600 26px 'Cormorant Garamond',Georgia,serif"></b><p>d'acomptes encaissés ce mois-ci</p><p class="sub" id="rfd" style="color:var(--warn);margin-top:4px"></p></div>
       </div>
     </div>
     <div class="panel">
@@ -325,11 +325,12 @@ async function loadAll(){
   var r=await Promise.all([
     db.from("rooms").select("*").order("id"),
     db.from("bookings").select("id,user_id,room_id,check_in,check_out,guests,total_price,status,created_at,rooms(name),profiles(full_name,email,phone)").order("created_at",{ascending:false}),
-    db.from("payments").select("id,booking_id,amount,method,status,created_at"),
+    db.from("payments").select("id,booking_id,amount,method,status,retained,created_at"),
     db.from("profiles").select("id,full_name,email,phone,role,created_at"),
     db.from("hotel_settings").select("key,value"),
     db.from("messages").select("id,name,contact,subject,body,status,created_at").order("created_at",{ascending:false})
   ]);
+  if(r[2].error){r[2]=await db.from("payments").select("id,booking_id,amount,method,status,created_at")}
   var bad=r.filter(function(x){return x.error})[0];
   if(bad){toast("Certaines données n'ont pas pu être chargées. Actualisez la page.");}
   ROOMS=r[0].data||[];BK=r[1].data||[];PAYS=r[2].data||[];PRF=r[3].data||[];MSG=r[5].data||[];
@@ -339,6 +340,10 @@ async function loadAll(){
 function refresh(){stats();list();roomsUI();team();clients();settingsUI();messages()}
 
 /* ---------- Tableau de bord ---------- */
+function counts(p){
+  var b=BK.filter(function(x){return x.id==p.booking_id})[0];
+  return !b||b.status!="cancelled"||!!p.retained;
+}
 function stats(){
   var today=todayIso(),active=ROOMS.filter(function(r){return r.is_active}).length;
   var occ=BK.filter(function(b){return b.status=="confirmed"&&b.check_in<=today&&b.check_out>today}).length;
@@ -346,7 +351,9 @@ function stats(){
   var pend=BK.filter(function(b){return b.status=="pending"}).length;
   var unread=MSG.filter(function(m){return m.status=="new"}).length;
   var m0=new Date();m0=m0.getFullYear()+"-"+pad(m0.getMonth()+1);
-  var rev=PAYS.filter(function(p){return p.status=="paid"&&String(p.created_at).slice(0,7)==m0}).reduce(function(s,p){return s+Number(p.amount)},0);
+  var rev=PAYS.filter(function(p){return p.status=="paid"&&counts(p)&&String(p.created_at).slice(0,7)==m0}).reduce(function(s,p){return s+Number(p.amount)},0);
+  var toRef=PAYS.filter(function(p){return p.status=="paid"&&!counts(p)}).reduce(function(s,p){return s+Number(p.amount)},0);
+  $("rfd").textContent=toRef>0?fmt(toRef)+" d'acomptes à traiter (réservations annulées)":"";
   $("s1").textContent=arr;$("s2").textContent=occ;$("s3").textContent=Math.max(0,active-occ);$("s4").textContent=pend;
   var pc=active?Math.min(100,Math.round(occ/active*100)):0;
   $("pct").textContent=pc+"%";$("ring").setAttribute("stroke-dasharray",(251.3*pc/100)+" 251.3");
@@ -371,7 +378,20 @@ function card(b){
   if(b.status=="pending")acts+='<button class="a" data-ok="'+b.id+'" type="button">Confirmer</button>';
   if(b.status!="cancelled")acts+='<button class="a" style="background:none;color:var(--olive)" data-pay="'+b.id+'" type="button">Encaisser</button>';
   if(b.status!="cancelled"&&b.check_out>=today)acts+='<button class="a o" data-no="'+b.id+'" type="button">Annuler</button>';
-  var payline=b.status=="cancelled"?"":(paid>0?"Payé : "+fmt(paid)+" · Reste à l'hôtel : "+fmt(Math.max(0,tot(b)-paid)):"Aucun paiement reçu"+(pct()>0?" (acompte demandé : "+fmt(depOf(b))+")":""));
+  var cp=PAYS.filter(function(p){return p.booking_id==b.id});
+  var sumS=function(f){return cp.filter(f).reduce(function(s,p){return s+Number(p.amount)},0)};
+  var toTreat=sumS(function(p){return p.status=="paid"&&!p.retained}),kept=sumS(function(p){return p.status=="paid"&&p.retained}),refd=sumS(function(p){return p.status=="refunded"});
+  var payline;
+  if(b.status=="cancelled"){
+    var parts=[];
+    if(toTreat>0)parts.push("Acompte reçu à traiter : "+fmt(toTreat));
+    if(kept>0)parts.push("Acompte conservé : "+fmt(kept));
+    if(refd>0)parts.push("Acompte remboursé : "+fmt(refd));
+    payline=parts.join(" · ");
+    if(toTreat>0)acts+='<button class="a" data-rf="'+b.id+'" type="button">Rembourser</button><button class="a" style="background:none;color:var(--olive)" data-kp="'+b.id+'" type="button">Conserver</button>';
+  }else{
+    payline=paid>0?"Payé : "+fmt(paid)+" · Reste à l'hôtel : "+fmt(Math.max(0,tot(b)-paid)):"Aucun paiement reçu"+(pct()>0?" (acompte demandé : "+fmt(depOf(b))+")":"");
+  }
   return '<article class="bk"><div class="top"><div><b>'+esc(cl.full_name||cl.email||"Client")+'</b><div class="sub">'+esc(b.rooms?b.rooms.name:"")+' · réf. FH-'+b.id+(cl.phone?' · '+esc(cl.phone):'')+'</div></div><span class="badge b-'+b.status+'">'+LABEL[b.status]+'</span></div>'+
     '<div class="row"><span class="sub">'+ds(b.check_in)+' → '+ds(b.check_out)+' · '+n+' nuit'+(n>1?'s':'')+' · '+b.guests+' pers.</span><b>'+fmt(tot(b))+'</b></div>'+
     (payline?'<div class="row" style="margin-top:6px"><span class="sub">'+payline+'</span></div>':'')+
@@ -398,6 +418,20 @@ function list(){
   document.querySelectorAll("[data-pay]").forEach(function(x){x.onclick=function(){$("pay"+x.dataset.pay).classList.add("on")}});
   document.querySelectorAll("[data-pyn]").forEach(function(x){x.onclick=function(){$("pay"+x.dataset.pyn).classList.remove("on")}});
   document.querySelectorAll("[data-pys]").forEach(function(x){x.onclick=function(){addPayment(+x.dataset.pys,x)}});
+  document.querySelectorAll("[data-rf]").forEach(function(x){x.onclick=function(){settle(+x.dataset.rf,"refund")}});
+  document.querySelectorAll("[data-kp]").forEach(function(x){x.onclick=function(){settle(+x.dataset.kp,"keep")}});
+}
+async function settle(id,mode){
+  var ps=PAYS.filter(function(p){return p.booking_id==id&&p.status=="paid"&&!p.retained});
+  if(!ps.length)return;
+  var total=ps.reduce(function(s,p){return s+Number(p.amount)},0);
+  var q=mode=="refund"?"Marquer l'acompte de "+fmt(total)+" comme remboursé au client ? (Le remboursement lui-même se fait hors du site, par mobile money ou en espèces.)":"L'hôtel conserve l'acompte de "+fmt(total)+" ? Il sera compté dans les revenus.";
+  if(!window.confirm(q))return;
+  var upd=mode=="refund"?{status:"refunded"}:{retained:true};
+  var r=await db.from("payments").update(upd).in("id",ps.map(function(p){return p.id}));
+  if(r.error){toast(mode=="keep"?"L'opération n'a pas pu être enregistrée. Avez-vous lancé le script de l'étape 8 ?":"L'opération n'a pas pu être enregistrée.");return}
+  ps.forEach(function(p){if(mode=="refund")p.status="refunded";else p.retained=true});
+  stats();list();toast(mode=="refund"?"Acompte marqué comme remboursé ✓":"Acompte conservé par l'hôtel ✓");
 }
 async function setStatus(id,status,msg){
   var r=await db.from("bookings").update({status:status}).eq("id",id);
