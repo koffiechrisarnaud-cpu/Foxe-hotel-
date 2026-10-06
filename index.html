@@ -372,7 +372,10 @@ E("bgo").onclick=async function(){
   btn.dataset.done="1";
   var pct=Math.min(100,Math.max(0,parseInt(SET.deposit_percent,10)||0)),dep=Math.round(r.data.total_price*pct/100/500)*500;
   m.className="bmsg ok";
-  m.textContent="Réservation FH-"+r.data.id+" enregistrée ✓ Statut : en attente."+(pct>0?" L'acompte de "+fmt(dep)+" pourra être réglé en ligne très bientôt. En attendant, l'hôtel confirmera votre réservation.":"");
+  var simPay=SET.simulate_payments==="true"&&pct>0;
+  m.textContent="Réservation FH-"+r.data.id+" enregistrée ✓ Statut : en attente."+(pct>0?(simPay?" Réglez l'acompte de "+fmt(dep)+" pour la confirmer.":" L'acompte de "+fmt(dep)+" pourra être réglé en ligne très bientôt. En attendant, l'hôtel confirmera votre réservation."):"");
+  if(simPay){E("bpay").href="paiement.html?b="+r.data.id;E("bpay").textContent="Payer l'acompte →"}
+  else{E("bpay").href="compte.html";E("bpay").textContent="Voir mes réservations →"}
   btn.style.display="none";E("bpay").style.display="block";
 };
 
