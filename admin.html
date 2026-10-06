@@ -230,6 +230,11 @@ input[type=range]{padding:0;height:34px}
       <h2>Moyens de paiement proposés</h2>
       <div id="sm"></div>
     </div>
+    <div class="panel">
+      <h2>Mode démonstration</h2>
+      <div class="row"><span>Paiement simulé</span><button class="sw" id="simsw" type="button"><i></i><span id="simt"></span></button></div>
+      <p class="sub" style="margin-top:8px">Activé : les clients peuvent « payer » l'acompte avec un faux paiement (aucun argent réel), pratique pour montrer le site. À désactiver avant la mise en service chez un hôtel.</p>
+    </div>
     <div class="err" id="se"></div>
     <button class="add" id="ss" type="button">Enregistrer les paramètres</button>
   </section>
@@ -533,8 +538,11 @@ function settingsUI(){
   $("sp").value=pct();$("sc").value=parseInt(SET.free_cancel_hours,10)||0;
   var on=String(SET.payment_methods||"").split(",");
   Object.keys(PMN).forEach(function(k){ST.pm[k]=on.indexOf(k)>-1});
+  ST.sim=SET.simulate_payments==="true";simRender();
   pmRender();ex();
 }
+function simRender(){$("simsw").classList.toggle("on",!!ST.sim);$("simt").textContent=ST.sim?"Activé":"Désactivé"}
+$("simsw").onclick=function(){ST.sim=!ST.sim;simRender()};
 function pmRender(){
   $("sm").innerHTML=Object.keys(PMN).map(function(k){
     return '<div class="row" style="border-top:1px solid var(--line);padding:10px 0 2px"><span>'+PMN[k]+'</span><button class="sw'+(ST.pm[k]?' on':'')+'" data-pm="'+k+'" type="button"><i></i>'+(ST.pm[k]?'Proposé':'Masqué')+'</button></div>';
@@ -553,7 +561,8 @@ $("ss").onclick=async function(){
   if(!Object.keys(ST.pm).some(function(k){return ST.pm[k]})){e.textContent="Gardez au moins un moyen de paiement.";return}
   e.textContent="";$("ss").disabled=true;
   var rows=[{key:"deposit_percent",value:String(Math.round(p))},{key:"free_cancel_hours",value:String(Math.round(c))},
-    {key:"payment_methods",value:Object.keys(PMN).filter(function(k){return ST.pm[k]}).join(",")}];
+    {key:"payment_methods",value:Object.keys(PMN).filter(function(k){return ST.pm[k]}).join(",")},
+    {key:"simulate_payments",value:ST.sim?"true":"false"}];
   var r=await db.from("hotel_settings").upsert(rows,{onConflict:"key"});
   $("ss").disabled=false;
   if(r.error){e.textContent="Les paramètres n'ont pas pu être enregistrés. Réessayez.";return}
