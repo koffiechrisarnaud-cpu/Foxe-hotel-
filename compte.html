@@ -162,7 +162,8 @@ function render(){
   $("list").innerHTML=items.map(function(b,i){
     var n=Math.round((new Date(b.check_out)-new Date(b.check_in))/864e5),c=COLORS[i%COLORS.length];
     var paid=PAY[b.id]||0,pay="";
-    if(b.status!="cancelled")pay=paid>0?"Acompte payé : "+fmt(paid):"Acompte à régler (paiement en ligne bientôt disponible)";
+    var canPay=paid==0&&b.status!="cancelled"&&kind(b)=="up"&&SET.simulate_payments==="true"&&(parseInt(SET.deposit_percent,10)||0)>0;
+    if(b.status!="cancelled")pay=paid>0?"Acompte payé : "+fmt(paid):(canPay?"Acompte à régler pour confirmer":"Acompte à régler (paiement en ligne bientôt disponible)");
     var act="";
     if(kind(b)=="past"&&b.status=="confirmed"){
       var rv=REVS[b.id];
@@ -173,6 +174,7 @@ function render(){
       act=canFree(b)?'<button class="cancel" data-id="'+b.id+'" type="button">Annuler</button>'
         :'<span class="pay">Annulation gratuite dépassée, contactez l\'hôtel</span>';
     }
+    if(canPay)act='<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><a class="cancel" href="paiement.html?b='+b.id+'" style="text-decoration:none;display:inline-block;border-color:var(--olive);background:var(--olive);color:#fff">Payer l\'acompte</a>'+act+'</div>';
     return '<article class="bk"><div class="ph" style="background:linear-gradient(135deg,'+c[0]+','+c[1]+')"></div><div class="in">'+
       '<div class="top"><h3>'+esc(b.rooms?b.rooms.name:"Chambre")+'</h3><span class="badge b-'+b.status+'">'+LABEL[b.status]+'</span></div>'+
       '<p class="dates">'+dstr(b.check_in)+' → '+dstr(b.check_out)+' · '+n+' nuit'+(n>1?'s':'')+' · réf. FH-'+b.id+'</p>'+
